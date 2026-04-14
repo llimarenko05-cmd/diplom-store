@@ -1,0 +1,72 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}История товара{% endblock %}
+{% block page_title %}История движения товара{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>{{ product.name }}</h2>
+    <p>
+        На этой странице представлена история движения товара:
+        поступления и продажи.
+    </p>
+</div>
+
+<div class="card">
+    <h2>Поступления</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Количество</th>
+                <th>Поставщик</th>
+                <th>Комментарий</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in receipts %}
+            <tr>
+                <td>{{ r.receipt_date }}</td>
+                <td><span class="status-ok">+{{ r.quantity }}</span></td>
+                <td>{{ r.supplier }}</td>
+                <td>{{ r.comment }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Поступления отсутствуют.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Продажи</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Количество</th>
+                <th>Комментарий</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in sales %}
+            <tr>
+                <td>{{ s.sale_date }}</td>
+                <td><span class="status-critical">-{{ s.quantity }}</span></td>
+                <td>{{ s.comment }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">Продажи отсутствуют.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,615 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f3f6fb;
+    color: #1f2937;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 270px;
+    background: #24469c;
+    color: white;
+    padding: 24px 20px;
+    flex-shrink: 0;
+}
+
+.sidebar-header h2 {
+    font-size: 26px;
+    margin-bottom: 8px;
+}
+
+.sidebar-header p {
+    color: #d9e6ff;
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 28px;
+}
+
+.sidebar-menu a {
+    display: block;
+    color: white;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+    .sidebar-menu a:hover {
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+.main-area {
+    flex: 1;
+    min-width: 0;
+}
+
+.topbar {
+    background: white;
+    border-bottom: 1px solid #dbe3ef;
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+    .topbar h1 {
+        font-size: 28px;
+        color: #1f3c88;
+    }
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.user-badge {
+    background: #e7edff;
+    color: #1f3c88;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.page-content {
+    padding: 28px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #dde6f1;
+    border-radius: 18px;
+    padding: 28px;
+    margin-bottom: 24px;
+}
+
+    .card h2 {
+        font-size: 24px;
+        color: #1f3c88;
+        margin-bottom: 14px;
+    }
+
+    .card p {
+        color: #475569;
+        line-height: 1.6;
+    }
+
+.btn {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+}
+
+    .btn:hover {
+        opacity: 0.92;
+    }
+
+.btn-secondary {
+    background: #71829f;
+    color: white;
+}
+
+.btn-danger {
+    background: #e52929;
+    color: white;
+}
+
+.btn:not(.btn-secondary):not(.btn-danger) {
+    background: #24469c;
+    color: white;
+}
+
+.btn-small {
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 12px;
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+    .form-row > * {
+        flex: 1 1 220px;
+    }
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cfd8e3;
+    border-radius: 12px;
+    background: white;
+    font-size: 15px;
+    color: #1f2937;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+form p {
+    margin-bottom: 16px;
+}
+
+.messages {
+    margin-bottom: 20px;
+}
+
+.message {
+    padding: 14px 16px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+    .message.success {
+        background: #e8f7ea;
+        color: #1f7a31;
+    }
+
+    .message.error {
+        background: #fdeaea;
+        color: #b42318;
+    }
+
+    .message.warning {
+        background: #fff4db;
+        color: #b26a00;
+    }
+
+    .message.info {
+        background: #e8f1ff;
+        color: #1d4ed8;
+    }
+
+.stats {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.stat-box {
+    flex: 1 1 220px;
+    background: linear-gradient(135deg, #24469c, #3b82f6);
+    color: white;
+    border-radius: 18px;
+    padding: 22px;
+}
+
+    .stat-box h3 {
+        font-size: 17px;
+        margin-bottom: 10px;
+    }
+
+    .stat-box p {
+        font-size: 30px;
+        font-weight: 700;
+        color: white;
+    }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th,
+td {
+    border: 1px solid #d9e2ef;
+    padding: 16px 14px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background: #eef3ff;
+    color: #1f3c88;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+td {
+    font-size: 15px;
+    color: #1f2937;
+}
+
+tr:hover td {
+    background: #f8fbff;
+}
+
+.products-table {
+    table-layout: fixed;
+}
+
+    .products-table th,
+    .products-table td {
+        word-break: break-word;
+    }
+
+.actions-cell {
+    width: 170px;
+    min-width: 170px;
+}
+
+.table-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+    .table-actions a {
+        width: 100%;
+        white-space: nowrap;
+    }
+
+.status-ok,
+.status-min,
+.status-critical {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    min-width: 140px;
+}
+
+.status-ok {
+    background: #dff5e4;
+    color: #0f7a39;
+}
+
+.status-min {
+    background: #fff0c7;
+    color: #9a6700;
+}
+
+.status-critical {
+    background: #f9dede;
+    color: #b42318;
+}
+
+.priority-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    min-width: 110px;
+    white-space: nowrap;
+}
+
+.priority-high {
+    background: #f9dede;
+    color: #b42318;
+}
+
+.priority-medium {
+    background: #fff0c7;
+    color: #9a6700;
+}
+
+.priority-low {
+    background: #dff5e4;
+    color: #0f7a39;
+}
+
+.actions-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border: 1px solid #dfe7f2;
+    border-radius: 18px;
+    padding: 28px;
+}
+
+    .login-box h2 {
+        text-align: center;
+        color: #1f3c88;
+        margin-bottom: 10px;
+    }
+
+    .login-box p {
+        text-align: center;
+        color: #64748b;
+        margin-bottom: 20px;
+    }
+
+.login-error {
+    background: #fdeaea;
+    color: #b42318;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* ТЁМНАЯ ТЕМА */
+body.dark {
+    background: #0f172a;
+    color: #e5e7eb;
+}
+
+    body.dark .topbar,
+    body.dark .card,
+    body.dark .login-box,
+    body.dark table {
+        background: #1e293b;
+        border-color: #334155;
+    }
+
+        body.dark .topbar h1,
+        body.dark .card h2,
+        body.dark th {
+            color: #c7d2fe;
+        }
+
+        body.dark .card p,
+        body.dark .login-box p {
+            color: #cbd5e1;
+        }
+
+    body.dark th {
+        background: #273449;
+        border-color: #475569;
+    }
+
+    body.dark td {
+        background: #1e293b;
+        color: #e5e7eb;
+        border-color: #475569;
+    }
+
+    body.dark tr:hover td {
+        background: #243244;
+    }
+
+    body.dark input,
+    body.dark select,
+    body.dark textarea {
+        background: #0f172a;
+        color: #e5e7eb;
+        border-color: #475569;
+    }
+
+    body.dark .user-badge {
+        background: #334155;
+        color: #e2e8f0;
+    }
+
+    body.dark .sidebar {
+        background: #122347;
+    }
+
+    body.dark .btn-secondary {
+        background: #64748b;
+    }
+
+    body.dark .btn-danger {
+        background: #ef4444;
+    }
+
+    /* Статусы в тёмной теме */
+    body.dark .status-ok {
+        background: #163d2a;
+        color: #86efac;
+    }
+
+    body.dark .status-min {
+        background: #4a3712;
+        color: #fcd34d;
+    }
+
+    body.dark .status-critical {
+        background: #4a1f24;
+        color: #fca5a5;
+    }
+
+    /* Приоритет в тёмной теме */
+    body.dark .priority-high {
+        background: #4a1f24;
+        color: #fca5a5;
+    }
+
+    body.dark .priority-medium {
+        background: #4a3712;
+        color: #fcd34d;
+    }
+
+    body.dark .priority-low {
+        background: #163d2a;
+        color: #86efac;
+    }
+
+@media (max-width: 1100px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-content {
+        padding: 18px;
+    }
+
+    th,
+    td {
+        padding: 12px 10px;
+        font-size: 14px;
+    }
+    /* ===== LOGIN PAGE ===== */
+
+    .login-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Карточка */
+    .login-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 20px;
+        width: 420px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+        /* Заголовок */
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* Подзаголовок */
+        .login-card p {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        /* Кнопка темы */
+        .login-card .btn-secondary {
+            display: block;
+            margin: 0 auto 20px auto;
+        }
+
+        /* Лейблы */
+        .login-card label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        /* Поля */
+        .login-card input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+    /* 🔥 ВАЖНО — блок кнопки */
+    .login-actions {
+        margin-top: 25px;
+    }
+
+        /* Кнопка */
+        .login-actions .btn {
+            width: 130px;
+        }
+
+    /* Кнопки (если нет — добавь) */
+    .btn {
+        padding: 10px 20px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: #2d4c9a;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #6c7a92;
+        color: white;
+    }
+
+    /* Тёмная тема */
+    body.dark {
+        background: #1e293b;
+    }
+
+        body.dark .login-card {
+            background: #334155;
+            color: white;
+        }
+
+        body.dark input {
+            background: #475569;
+            color: white;
+            border: none;
+        }
+}

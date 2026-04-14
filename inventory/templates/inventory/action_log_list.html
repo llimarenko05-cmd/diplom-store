@@ -1,0 +1,59 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Журнал действий{% endblock %}
+{% block page_title %}Журнал действий{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Контроль пользовательских операций</h2>
+    <p>
+        На этой странице отображаются основные действия пользователей в системе:
+        добавление, изменение, удаление товаров, а также оформление продаж и поступлений.
+    </p>
+</div>
+
+<div class="card">
+    <h2>Последние действия</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Дата и время</th>
+                <th>Пользователь</th>
+                <th>Тип действия</th>
+                <th>Товар</th>
+                <th>Описание</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.created_at|date:"d.m.Y H:i" }}</td>
+                <td>
+                    {% if log.user %}
+                    {{ log.user.username }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td>{{ log.get_action_type_display }}</td>
+                <td>
+                    {% if log.product %}
+                    {{ log.product.name }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td>{{ log.description }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">Журнал действий пока пуст.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в систему</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f3f6fb;
+            color: #1f2937;
+        }
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 680px;
+        }
+
+        .login-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #1f3c88;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            font-size: 22px;
+            color: #425b84;
+            margin-bottom: 24px;
+        }
+
+        .theme-button {
+            display: inline-block;
+            background: #71829f;
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 16px 30px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #1f2937;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 1px solid #cfd8e3;
+            border-radius: 20px;
+            font-size: 20px;
+            background: #ffffff;
+            color: #1f2937;
+            box-sizing: border-box;
+            margin-bottom: 22px;
+        }
+
+        .login-actions {
+            margin-top: 26px;
+        }
+
+        .submit-button {
+            display: inline-block;
+            background: #2d4fa3;
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 16px 28px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .error-box {
+            margin-bottom: 18px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: #fdeaea;
+            color: #b42318;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        body.dark {
+            background: #0f172a;
+            color: #e5e7eb;
+        }
+
+            body.dark .login-title {
+                color: #c7d2fe;
+            }
+
+            body.dark .login-subtitle,
+            body.dark .form-label {
+                color: #dbe4f3;
+            }
+
+            body.dark .form-input {
+                background: #1e293b;
+                color: #e5e7eb;
+                border-color: #475569;
+            }
+
+            body.dark .theme-button {
+                background: #475569;
+            }
+
+            body.dark .submit-button {
+                background: #3b82f6;
+            }
+
+            body.dark .error-box {
+                background: #4a1f24;
+                color: #fca5a5;
+            }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-box">
+            <h1 class="login-title">Вход в систему</h1>
+            <p class="login-subtitle">Информационная система управления товарными запасами</p>
+
+            <button type="button" class="theme-button" id="theme-toggle">Тёмная тема</button>
+
+            {% if form.errors %}
+            <div class="error-box">
+                Неверный логин или пароль. Попробуйте снова.
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <label for="id_username" class="form-label">Логин</label>
+                <input type="text" name="username" id="id_username" class="form-input" required>
+
+                <label for="id_password" class="form-label">Пароль</label>
+                <input type="password" name="password" id="id_password" class="form-input" required>
+
+                <div class="login-actions">
+                    <button type="submit" class="submit-button">Войти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const themeButton = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('theme');
+
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+            themeButton.textContent = 'Светлая тема';
+        }
+
+        themeButton.addEventListener('click', function () {
+            document.body.classList.toggle('dark');
+
+            if (document.body.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+                themeButton.textContent = 'Светлая тема';
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeButton.textContent = 'Тёмная тема';
+            }
+        });
+    </script>
+</body>
+</html>

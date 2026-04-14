@@ -1,0 +1,26 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Оформить продажу{% endblock %}
+{% block page_title %}Оформление продажи{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Продажа товара</h2>
+    <p>
+        Заполните форму для оформления продажи товара.
+        После сохранения остаток на складе будет автоматически уменьшен.
+    </p>
+</div>
+
+<div class="card">
+    <h2>Форма продажи</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn">💰 Сохранить продажу</button>
+    </form>
+</div>
+
+{% endblock %}

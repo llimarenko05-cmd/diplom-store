@@ -1,0 +1,29 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Редактирование товара{% endblock %}
+{% block page_title %}Редактирование товара{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Редактирование товара</h2>
+    <p>
+        На этой странице можно изменить данные выбранного товара.
+    </p>
+</div>
+
+<div class="card">
+    <h2>{{ product.name }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
+            <button type="submit" class="btn">💾 Сохранить изменения</button>
+            <a href="{% url 'product_detail' product.id %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

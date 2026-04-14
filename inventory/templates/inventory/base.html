@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Складская система{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Склад</h2>
+                <p>Система управления запасами</p>
+            </div>
+
+            <nav class="sidebar-menu">
+                {% if is_admin_role %}
+                <a href="/">Главная</a>
+                <a href="/products/">Товары</a>
+                <a href="/stock/">Остатки</a>
+                <a href="/low-stock/">Низкий остаток</a>
+                <a href="/replenishment/">Требуют пополнения</a>
+                <a href="/no-movement/">Товары без движения</a>
+                <a href="/action-log/">Журнал действий</a>
+                <a href="/sales/create/">Продажа</a>
+                <a href="/receipts/create/">Поступление</a>
+                <a href="/sales/report/">Отчёт</a>
+                {% endif %}
+
+                {% if is_merchandiser_role and not is_admin_role %}
+                <a href="/">Главная</a>
+                <a href="/stock/">Остатки</a>
+                <a href="/low-stock/">Низкий остаток</a>
+                <a href="/replenishment/">Пополнение</a>
+                <a href="/no-movement/">Без движения</a>
+                <a href="/receipts/create/">Поступление</a>
+                <a href="/sales/report/">Отчёт</a>
+                {% endif %}
+
+                {% if is_seller_role and not is_admin_role %}
+                <a href="/products/">Товары</a>
+                <a href="/stock/">Остатки</a>
+                <a href="/sales/create/">Продажа</a>
+                {% endif %}
+            </nav>
+        </aside>
+
+        <div class="main-area">
+            <header class="topbar">
+                <h1>{% block page_title %}{% endblock %}</h1>
+
+                <div class="topbar-right">
+                    <button type="button" class="btn btn-secondary" id="theme-toggle">Тёмная тема</button>
+                    <span class="user-badge">{{ user.username }}</span>
+
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Выйти</button>
+                    </form>
+                </div>
+            </header>
+
+            <main class="page-content">
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    {% else %}
+    <div class="login-wrapper">
+        {% block auth_content %}{% endblock %}
+    </div>
+    {% endif %}
+
+    <script>
+        const themeButton = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('theme');
+
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+            if (themeButton) themeButton.textContent = 'Светлая тема';
+        }
+
+        if (themeButton) {
+            themeButton.addEventListener('click', function () {
+                document.body.classList.toggle('dark');
+
+                if (document.body.classList.contains('dark')) {
+                    localStorage.setItem('theme', 'dark');
+                    themeButton.textContent = 'Светлая тема';
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    themeButton.textContent = 'Тёмная тема';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

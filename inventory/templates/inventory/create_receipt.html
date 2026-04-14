@@ -1,0 +1,26 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Оформить поступление{% endblock %}
+{% block page_title %}Оформление поступления{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Поступление товара</h2>
+    <p>
+        Заполните форму для регистрации поступления товара.
+        После сохранения остаток на складе будет автоматически увеличен.
+    </p>
+</div>
+
+<div class="card">
+    <h2>Форма поступления</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn">🚚 Сохранить поступление</button>
+    </form>
+</div>
+
+{% endblock %}

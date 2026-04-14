@@ -1,0 +1,87 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Товары без движения{% endblock %}
+{% block page_title %}Товары без движения{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px;">
+        <div>
+            <h2 style="margin-bottom: 8px;">Контроль неликвидных позиций</h2>
+            <p>
+                На этой странице отображаются товары, по которым не было продаж за выбранный период.
+                Это помогает выявлять зависшие остатки и принимать решения по ассортименту.
+            </p>
+        </div>
+
+        <a href="{% url 'export_no_movement_excel' %}?days={{ period_days }}" class="btn btn-secondary">Экспорт в Excel</a>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Период анализа</h2>
+
+    <form method="get" class="form-row">
+        <select name="days">
+            {% for option in period_options %}
+            <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>
+                {{ option.label }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn">Применить</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2>Список товаров</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Наименование</th>
+                <th>Категория</th>
+                <th>Поставщик</th>
+                <th>Пол</th>
+                <th>Артикул</th>
+                <th>Цена</th>
+                <th>Остаток</th>
+                <th>Мин. остаток</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td><strong>{{ product.name }}</strong></td>
+                <td>{{ product.category }}</td>
+                <td>{% if product.supplier %}{{ product.supplier }}{% else %}-{% endif %}</td>
+                <td>{{ product.gender }}</td>
+                <td>{{ product.article }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.minimum_quantity }}</td>
+                <td>
+                    {% if product.stock_status == 'В наличии' %}
+                    <span class="status-ok">{{ product.stock_status }}</span>
+                    {% elif product.stock_status == 'Минимальный остаток' %}
+                    <span class="status-min">{{ product.stock_status }}</span>
+                    {% elif product.stock_status == 'Критически мало' %}
+                    <span class="status-critical">{{ product.stock_status }}</span>
+                    {% else %}
+                    <span class="status-critical">Нет в наличии</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9">Нет товаров без движения за выбранный период.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

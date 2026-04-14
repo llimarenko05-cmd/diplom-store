@@ -1,0 +1,50 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Низкий остаток{% endblock %}
+{% block page_title %}Низкий остаток{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Критические остатки</h2>
+    <p>Товары, требующие срочного пополнения.</p>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Артикул</th>
+                <th>Категория</th>
+                <th>Размер</th>
+                <th>Цвет</th>
+                <th>Остаток</th>
+                <th>Мин. остаток</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td><strong>{{ product.name }}</strong></td>
+                <td>{{ product.article }}</td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.size }}</td>
+                <td>{{ product.color }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.minimum_quantity }}</td>
+                <td>
+                    <span class="status-critical">{{ product.stock_status }}</span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8">Нет товаров</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

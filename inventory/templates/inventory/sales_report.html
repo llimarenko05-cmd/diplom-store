@@ -1,0 +1,88 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Отчёт по продажам{% endblock %}
+{% block page_title %}Отчёт по продажам{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Фильтр отчёта</h2>
+    <p>
+        Отчёт позволяет анализировать продажи товаров за выбранный период времени.
+    </p>
+
+    <form method="get" class="form-row">
+        <input type="date" name="start_date" value="{{ start_date }}">
+        <input type="date" name="end_date" value="{{ end_date }}">
+        <button type="submit" class="btn">Применить фильтр</button>
+        <a href="{% url 'export_sales_report_excel' %}?start_date={{ start_date }}&end_date={{ end_date }}" class="btn btn-secondary">Экспорт в Excel</a>
+    </form>
+</div>
+
+<div class="card">
+    <h2>График продаж</h2>
+    <canvas id="salesChart"></canvas>
+</div>
+
+<div class="card">
+    <h2>Таблица продаж</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Количество проданных единиц</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in report %}
+            <tr>
+                <td><strong>{{ item.product__name }}</strong></td>
+                <td>{{ item.total_sold }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Нет данных за выбранный период.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{ sales_chart_labels|json_script:"sales-chart-labels" }}
+{{ sales_chart_data|json_script:"sales-chart-data" }}
+
+<script>
+    const salesLabels = JSON.parse(document.getElementById('sales-chart-labels').textContent);
+    const salesData = JSON.parse(document.getElementById('sales-chart-data').textContent);
+
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+
+    new Chart(salesCtx, {
+        type: 'bar',
+        data: {
+            labels: salesLabels,
+            datasets: [{
+                label: 'Количество проданных единиц',
+                data: salesData,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

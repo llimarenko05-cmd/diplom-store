@@ -1,0 +1,29 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Удаление товара{% endblock %}
+{% block page_title %}Удаление товара{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Подтверждение удаления</h2>
+    <p>
+        Вы действительно хотите удалить товар <strong>{{ product.name }}</strong>?
+    </p>
+    <p>
+        Это действие нельзя отменить.
+    </p>
+</div>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="actions-row">
+            <button type="submit" class="btn btn-danger">Удалить</button>
+            <a href="{% url 'product_detail' product.id %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,226 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Главная{% endblock %}
+{% block page_title %}Главная панель{% endblock %}
+
+{% block content %}
+
+<div class="stats">
+    <div class="stat-box">
+        <h3>Всего товаров</h3>
+        <p>{{ products_count }}</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Категорий</h3>
+        <p>{{ categories_count }}</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Низкий остаток</h3>
+        <p>{{ low_stock_count }}</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Без движения</h3>
+        <p>{{ no_movement_count }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Общая сводка</h2>
+    <p>
+        Система предназначена для оперативного управления товарными остатками,
+        контроля дефицита, анализа продаж и поддержки решений по пополнению ассортимента.
+    </p>
+    {% if top_product %}
+    <p style="margin-top: 10px;">
+        Наиболее продаваемый товар: <strong>{{ top_product.product__name }}</strong>
+    </p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>График текущих остатков</h2>
+    <canvas id="stockChart"></canvas>
+</div>
+
+<div class="card">
+    <h2>Приоритетное пополнение</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Остаток</th>
+                <th>Средние продажи в день</th>
+                <th>Хватит на дней</th>
+                <th>Рекомендуемый заказ</th>
+                <th>Приоритет</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in top_replenishment_products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.avg_daily_sales }}</td>
+                <td>
+                    {% if product.days_left is not None %}
+                    {{ product.days_left }}
+                    {% else %}
+                    Нет продаж
+                    {% endif %}
+                </td>
+                <td>{{ product.recommended_order }}</td>
+                <td>
+                    {% if product.replenishment_priority == 'Высокий' %}
+                    <span class="status-critical">{{ product.replenishment_priority }}</span>
+                    {% elif product.replenishment_priority == 'Средний' %}
+                    <span class="status-min">{{ product.replenishment_priority }}</span>
+                    {% else %}
+                    <span class="status-ok">{{ product.replenishment_priority }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Нет товаров, требующих пополнения.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Товары без движения</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Категория</th>
+                <th>Артикул</th>
+                <th>Остаток</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in no_movement_products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.article }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>
+                    {% if product.stock_status == 'В наличии' %}
+                    <span class="status-ok">{{ product.stock_status }}</span>
+                    {% elif product.stock_status == 'Минимальный остаток' %}
+                    <span class="status-min">{{ product.stock_status }}</span>
+                    {% elif product.stock_status == 'Критически мало' %}
+                    <span class="status-critical">{{ product.stock_status }}</span>
+                    {% else %}
+                    <span class="status-critical">Нет в наличии</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">Нет товаров без движения.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Последние продажи</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Товар</th>
+                <th>Количество</th>
+                <th>Комментарий</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in latest_sales %}
+            <tr>
+                <td>{{ sale.sale_date|date:"d.m.Y H:i" }}</td>
+                <td>{{ sale.product.name }}</td>
+                <td>{{ sale.quantity }}</td>
+                <td>{{ sale.comment|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Продаж пока нет.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Последние поступления</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Товар</th>
+                <th>Количество</th>
+                <th>Поставщик</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for receipt in latest_receipts %}
+            <tr>
+                <td>{{ receipt.receipt_date|date:"d.m.Y H:i" }}</td>
+                <td>{{ receipt.product.name }}</td>
+                <td>{{ receipt.quantity }}</td>
+                <td>{{ receipt.supplier }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Поступлений пока нет.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{ chart_labels|json_script:"stock-chart-labels" }}
+{{ chart_data|json_script:"stock-chart-data" }}
+
+<script>
+    const stockLabels = JSON.parse(document.getElementById('stock-chart-labels').textContent);
+    const stockData = JSON.parse(document.getElementById('stock-chart-data').textContent);
+
+    const stockCtx = document.getElementById('stockChart').getContext('2d');
+
+    new Chart(stockCtx, {
+        type: 'bar',
+        data: {
+            labels: stockLabels,
+            datasets: [{
+                label: 'Количество товара на складе',
+                data: stockData,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

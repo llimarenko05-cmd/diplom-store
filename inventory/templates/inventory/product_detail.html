@@ -1,0 +1,98 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Карточка товара{% endblock %}
+{% block page_title %}Карточка товара{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>{{ product.name }}</h2>
+    <p>
+        Детальная информация о товаре, его характеристиках, остатке и истории движения.
+    </p>
+</div>
+
+<div class="card">
+    <h2>Основная информация</h2>
+
+    <table>
+        <tr>
+            <th style="width: 280px;">Наименование</th>
+            <td>{{ product.name }}</td>
+        </tr>
+        <tr>
+            <th>Категория</th>
+            <td>{{ product.category }}</td>
+        </tr>
+        <tr>
+            <th>Поставщик</th>
+            <td>{% if product.supplier %}{{ product.supplier }}{% else %}Не указан{% endif %}</td>
+        </tr>
+        <tr>
+            <th>Пол</th>
+            <td>{{ product.gender }}</td>
+        </tr>
+        <tr>
+            <th>Размер</th>
+            <td>{{ product.size }}</td>
+        </tr>
+        <tr>
+            <th>Цвет</th>
+            <td>{{ product.color }}</td>
+        </tr>
+        <tr>
+            <th>Артикул</th>
+            <td>{{ product.article }}</td>
+        </tr>
+        <tr>
+            <th>Цена</th>
+            <td>{{ product.price }}</td>
+        </tr>
+        <tr>
+            <th>Текущее количество</th>
+            <td>{{ product.quantity }}</td>
+        </tr>
+        <tr>
+            <th>Минимальный остаток</th>
+            <td>{{ product.minimum_quantity }}</td>
+        </tr>
+        <tr>
+            <th>Статус</th>
+            <td>
+                {% if product.stock_status == 'В наличии' %}
+                <span class="status-ok">{{ product.stock_status }}</span>
+                {% elif product.stock_status == 'Минимальный остаток' %}
+                <span class="status-min">{{ product.stock_status }}</span>
+                {% elif product.stock_status == 'Критически мало' %}
+                <span class="status-critical">{{ product.stock_status }}</span>
+                {% else %}
+                <span class="status-critical">Нет в наличии</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Количество поступлений</th>
+            <td>{{ receipts_count }}</td>
+        </tr>
+        <tr>
+            <th>Количество продаж</th>
+            <td>{{ sales_count }}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Действия</h2>
+
+    <div class="actions-row">
+        {% if is_admin_role %}
+        <a href="{% url 'edit_product' product.id %}" class="btn">Редактировать товар</a>
+        <a href="{% url 'delete_product' product.id %}" class="btn btn-danger">Удалить товар</a>
+        {% endif %}
+
+        <a href="{% url 'product_history' product.id %}" class="btn btn-secondary">Открыть историю</a>
+        <a href="{% url 'product_list' %}" class="btn">Вернуться к списку</a>
+    </div>
+</div>
+
+{% endblock %}

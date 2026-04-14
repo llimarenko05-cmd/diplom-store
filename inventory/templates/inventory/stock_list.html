@@ -1,0 +1,63 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Остатки товаров{% endblock %}
+{% block page_title %}Остатки товаров{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Информация об остатках</h2>
+    <p>
+        На данной странице отображаются текущие остатки товаров, минимальные допустимые значения
+        и автоматически определяемый статус запасов.
+    </p>
+</div>
+
+<div class="card">
+    <h2>Список остатков</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Наименование</th>
+                <th>Артикул</th>
+                <th>Категория</th>
+                <th>Размер</th>
+                <th>Цвет</th>
+                <th>Остаток</th>
+                <th>Минимальный остаток</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td><strong>{{ product.name }}</strong></td>
+                <td>{{ product.article }}</td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.size }}</td>
+                <td>{{ product.color }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.minimum_quantity }}</td>
+                <td>
+                    {% if product.stock_status == 'В наличии' %}
+                    <span class="status-ok">В наличии</span>
+                    {% elif product.stock_status == 'Минимальный остаток' %}
+                    <span class="status-min">Минимальный остаток</span>
+                    {% elif product.stock_status == 'Критически мало' %}
+                    <span class="status-critical">Критически мало</span>
+                    {% else %}
+                    <span class="status-critical">Нет в наличии</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8">Нет данных по остаткам.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

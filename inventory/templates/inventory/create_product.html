@@ -1,0 +1,29 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Добавление товара{% endblock %}
+{% block page_title %}Добавление товара{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Новый товар</h2>
+    <p>
+        Заполните форму для добавления нового товара в систему.
+    </p>
+</div>
+
+<div class="card">
+    <h2>Форма добавления</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="actions-row">
+            <button type="submit" class="btn">Сохранить товар</button>
+            <a href="{% url 'product_list' %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

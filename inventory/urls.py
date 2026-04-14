@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .views import create_test_user
 
 urlpatterns = [
     path('', views.role_redirect, name='role_redirect'),
@@ -32,5 +31,4 @@ urlpatterns = [
 
     path('sales/report/', views.sales_report, name='sales_report'),
     path('sales/report/export/', views.export_sales_report_excel, name='export_sales_report_excel'),
-    path('create-user/', create_test_user),
 ]

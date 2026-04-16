@@ -808,8 +808,4 @@ def export_sales_report_excel(request):
     return _make_excel_response(workbook, 'sales_report.xlsx')
 
 
-def create_test_user(request):
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@mail.com', 'admin12345')
-        return HttpResponse('User created')
-    return HttpResponse('User already exists')
+

@@ -13,7 +13,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font
 
 from .forms import ProductForm, SaleForm, StockReceiptForm
-from .models import ActionLog, Category, Product, Sale, StockReceipt
+from .models import ActionLog, Category, Product, Sale, StockReceipt, SaleOrder, SaleItem
 
 
 def _forbidden(request, message='У вас нет прав для доступа к данной странице.'):

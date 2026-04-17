@@ -5,61 +5,126 @@
 
 {% block content %}
 
+<div class="card page-intro-card">
+    <div class="page-intro">
+        <div>
+            <h2>Каталог товаров</h2>
+            <p>
+                На этой странице можно быстро найти товар по названию или артикулу,
+                отфильтровать позиции по категории и перейти к карточке товара или истории движения.
+            </p>
+        </div>
+    </div>
+</div>
+
 <div class="card">
-    <form method="get" class="form-row">
-        <input type="text" name="q" placeholder="Поиск..." value="{{ query }}">
-        <select name="category">
-            <option value="">Категория</option>
-            {% for category in categories %}
-            <option value="{{ category.id }}" {% if category.selected %}selected{% endif %}>
-                {{ category.name }}
-            </option>
-            {% endfor %}
-        </select>
-        <button type="submit" class="btn">Найти</button>
+    <div class="section-head">
+        <h2>Поиск и фильтр</h2>
+        <p>Используйте поиск и фильтр, чтобы быстрее находить нужные позиции.</p>
+    </div>
+
+    <form method="get" class="products-filter-form">
+        <div class="products-filter-grid">
+            <div class="filter-field filter-field-wide">
+                <label for="id_q">Поиск</label>
+                <input type="text"
+                       id="id_q"
+                       name="q"
+                       placeholder="Введите название товара или артикул"
+                       value="{{ query }}">
+            </div>
+
+            <div class="filter-field">
+                <label for="id_category">Категория</label>
+                <select name="category" id="id_category">
+                    <option value="">Все категории</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if category.selected %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="toolbar-actions">
+            <button type="submit" class="btn">Найти</button>
+            <a href="{% url 'product_list' %}" class="btn btn-secondary">Сбросить</a>
+            <a href="{% url 'export_products_excel' %}?q={{ query }}&category={% for category in categories %}{% if category.selected %}{{ category.id }}{% endif %}{% endfor %}" class="btn btn-secondary">
+                Экспорт в Excel
+            </a>
+        </div>
     </form>
 </div>
 
 <div class="card">
-
-    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-        <h2>Список товаров</h2>
+    <div class="list-header">
+        <div>
+            <h2>Список товаров</h2>
+            <p class="list-subtitle">
+                Найдено позиций: <strong>{{ products|length }}</strong>
+            </p>
+        </div>
 
         {% if is_admin_role %}
-        <a href="{% url 'create_product' %}" class="btn">Добавить</a>
+        <a href="{% url 'create_product' %}" class="btn">Добавить товар</a>
         {% endif %}
     </div>
 
-    <table class="products-table">
-        <thead>
-            <tr>
-                <th>Название</th>
-                <th>Артикул</th>
-                <th>Остаток</th>
-                <th>Мин.</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
+    {% if products %}
+    <div class="table-wrap">
+        <table class="products-table refined-products-table">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Артикул</th>
+                    <th>Остаток</th>
+                    <th>Мин. остаток</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
 
-        <tbody>
-            {% for product in products %}
-            <tr>
-                <td>{{ product.name }}</td>
-                <td>{{ product.article }}</td>
-                <td>{{ product.quantity }}</td>
-                <td>{{ product.minimum_quantity }}</td>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        <div class="product-main-cell">
+                            <span class="product-name">{{ product.name }}</span>
+                            {% if product.category %}
+                            <span class="product-meta">{{ product.category }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
 
-                <td>
-                    <div class="table-actions">
-                        <a href="{% url 'product_detail' product.id %}" class="btn btn-small">Открыть</a>
-                        <a href="{% url 'product_history' product.id %}" class="btn btn-secondary btn-small">История</a>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    <td>
+                        <span class="article-badge">{{ product.article }}</span>
+                    </td>
 
+                    <td>
+                        <span class="quantity-badge">{{ product.quantity }}</span>
+                    </td>
+
+                    <td>
+                        <span class="min-quantity-badge">{{ product.minimum_quantity }}</span>
+                    </td>
+
+                    <td class="actions-cell">
+                        <div class="table-actions table-actions-inline">
+                            <a href="{% url 'product_detail' product.id %}" class="btn btn-small">Открыть</a>
+                            <a href="{% url 'product_history' product.id %}" class="btn btn-secondary btn-small">История</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h3>Ничего не найдено</h3>
+        <p>Попробуйте изменить поисковый запрос или выбрать другую категорию.</p>
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}

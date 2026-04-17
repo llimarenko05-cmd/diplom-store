@@ -48,10 +48,12 @@ a {
     margin-bottom: 8px;
     font-size: 15px;
     font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease;
 }
 
     .sidebar-menu a:hover {
         background: rgba(255, 255, 255, 0.12);
+        transform: translateX(2px);
     }
 
 .main-area {
@@ -100,6 +102,7 @@ a {
     border-radius: 18px;
     padding: 28px;
     margin-bottom: 24px;
+    box-shadow: 0 4px 14px rgba(31, 60, 136, 0.04);
 }
 
     .card h2 {
@@ -113,6 +116,55 @@ a {
         line-height: 1.6;
     }
 
+.page-intro-card {
+    padding-bottom: 24px;
+}
+
+.page-intro {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.section-head {
+    margin-bottom: 18px;
+}
+
+    .section-head h2 {
+        margin-bottom: 8px;
+    }
+
+    .section-head p {
+        margin-bottom: 0;
+    }
+
+.list-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+    .list-header h2 {
+        margin-bottom: 6px;
+    }
+
+.list-subtitle {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.toolbar-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
 .btn {
     display: inline-block;
     padding: 12px 18px;
@@ -122,10 +174,12 @@ a {
     font-size: 15px;
     font-weight: 700;
     text-align: center;
+    transition: transform 0.15s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 }
 
     .btn:hover {
-        opacity: 0.92;
+        opacity: 0.96;
+        transform: translateY(-1px);
     }
 
 .btn-secondary {
@@ -159,6 +213,33 @@ a {
         flex: 1 1 220px;
     }
 
+.products-filter-form {
+    width: 100%;
+}
+
+.products-filter-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+}
+
+.filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-field-wide {
+    min-width: 0;
+}
+
+.filter-field label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 0;
+}
+
 input,
 select,
 textarea {
@@ -169,7 +250,16 @@ textarea {
     background: white;
     font-size: 15px;
     color: #1f2937;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #4f73cf;
+        box-shadow: 0 0 0 3px rgba(79, 115, 207, 0.12);
+    }
 
 label {
     display: block;
@@ -238,6 +328,11 @@ form p {
         color: white;
     }
 
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -257,6 +352,7 @@ th {
     color: #1f3c88;
     font-size: 15px;
     font-weight: 700;
+    white-space: nowrap;
 }
 
 td {
@@ -277,9 +373,80 @@ tr:hover td {
         word-break: break-word;
     }
 
+.refined-products-table th:nth-child(1),
+.refined-products-table td:nth-child(1) {
+    width: 30%;
+}
+
+.refined-products-table th:nth-child(2),
+.refined-products-table td:nth-child(2) {
+    width: 18%;
+}
+
+.refined-products-table th:nth-child(3),
+.refined-products-table td:nth-child(3) {
+    width: 12%;
+}
+
+.refined-products-table th:nth-child(4),
+.refined-products-table td:nth-child(4) {
+    width: 14%;
+}
+
+.refined-products-table th:nth-child(5),
+.refined-products-table td:nth-child(5) {
+    width: 26%;
+}
+
+.product-main-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.product-name {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.product-meta {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.article-badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.quantity-badge,
+.min-quantity-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.quantity-badge {
+    background: #e8f1ff;
+    color: #1d4ed8;
+}
+
+.min-quantity-badge {
+    background: #f8fafc;
+    color: #475569;
+}
+
 .actions-cell {
-    width: 170px;
-    min-width: 170px;
+    min-width: 220px;
 }
 
 .table-actions {
@@ -291,6 +458,17 @@ tr:hover td {
     .table-actions a {
         width: 100%;
         white-space: nowrap;
+    }
+
+.table-actions-inline {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+    .table-actions-inline a {
+        width: auto;
+        min-width: 110px;
     }
 
 .status-ok,
@@ -356,6 +534,25 @@ tr:hover td {
     flex-wrap: wrap;
 }
 
+.empty-state {
+    padding: 36px 20px;
+    text-align: center;
+    border: 1px dashed #cfd8e3;
+    border-radius: 16px;
+    background: #fafcff;
+}
+
+    .empty-state h3 {
+        font-size: 22px;
+        color: #1f3c88;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        margin-bottom: 0;
+    }
+
 .login-wrapper {
     min-height: 100vh;
     display: flex;
@@ -404,19 +601,24 @@ body.dark {
     body.dark .topbar,
     body.dark .card,
     body.dark .login-box,
-    body.dark table {
+    body.dark table,
+    body.dark .empty-state {
         background: #1e293b;
         border-color: #334155;
     }
 
         body.dark .topbar h1,
         body.dark .card h2,
-        body.dark th {
+        body.dark th,
+        body.dark .empty-state h3 {
             color: #c7d2fe;
         }
 
         body.dark .card p,
-        body.dark .login-box p {
+        body.dark .login-box p,
+        body.dark .list-subtitle,
+        body.dark .product-meta,
+        body.dark .empty-state p {
             color: #cbd5e1;
         }
 
@@ -443,6 +645,19 @@ body.dark {
         border-color: #475569;
     }
 
+        body.dark input:focus,
+        body.dark select:focus,
+        body.dark textarea:focus {
+            border-color: #7aa2ff;
+            box-shadow: 0 0 0 3px rgba(122, 162, 255, 0.16);
+        }
+
+    body.dark .filter-field label,
+    body.dark label,
+    body.dark .product-name {
+        color: #e5e7eb;
+    }
+
     body.dark .user-badge {
         background: #334155;
         color: #e2e8f0;
@@ -458,6 +673,21 @@ body.dark {
 
     body.dark .btn-danger {
         background: #ef4444;
+    }
+
+    body.dark .article-badge {
+        background: #334155;
+        color: #e2e8f0;
+    }
+
+    body.dark .quantity-badge {
+        background: #1e3a8a;
+        color: #dbeafe;
+    }
+
+    body.dark .min-quantity-badge {
+        background: #334155;
+        color: #e2e8f0;
     }
 
     /* Статусы в тёмной теме */
@@ -515,7 +745,28 @@ body.dark {
         padding: 12px 10px;
         font-size: 14px;
     }
-    /* ===== LOGIN PAGE ===== */
+
+    .products-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .list-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .table-actions-inline {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .table-actions-inline a {
+            width: 100%;
+        }
+
+    .actions-cell {
+        min-width: 170px;
+    }
 
     .login-wrapper {
         display: flex;
@@ -524,35 +775,30 @@ body.dark {
         height: 100vh;
     }
 
-    /* Карточка */
     .login-card {
         background: #ffffff;
         padding: 40px;
         border-radius: 20px;
         width: 420px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-        /* Заголовок */
         .login-card h2 {
             text-align: center;
             margin-bottom: 10px;
         }
 
-        /* Подзаголовок */
         .login-card p {
             text-align: center;
             margin-bottom: 20px;
             color: #666;
         }
 
-        /* Кнопка темы */
         .login-card .btn-secondary {
             display: block;
             margin: 0 auto 20px auto;
         }
 
-        /* Лейблы */
         .login-card label {
             display: block;
             margin-top: 15px;
@@ -560,7 +806,6 @@ body.dark {
             font-weight: 500;
         }
 
-        /* Поля */
         .login-card input {
             width: 100%;
             padding: 12px;
@@ -569,23 +814,13 @@ body.dark {
             outline: none;
         }
 
-    /* 🔥 ВАЖНО — блок кнопки */
     .login-actions {
         margin-top: 25px;
     }
 
-        /* Кнопка */
         .login-actions .btn {
             width: 130px;
         }
-
-    /* Кнопки (если нет — добавь) */
-    .btn {
-        padding: 10px 20px;
-        border-radius: 12px;
-        border: none;
-        cursor: pointer;
-    }
 
     .btn-primary {
         background: #2d4c9a;
@@ -597,19 +832,14 @@ body.dark {
         color: white;
     }
 
-    /* Тёмная тема */
-    body.dark {
-        background: #1e293b;
+    body.dark .login-card {
+        background: #334155;
+        color: white;
     }
 
-        body.dark .login-card {
-            background: #334155;
-            color: white;
-        }
-
-        body.dark input {
-            background: #475569;
-            color: white;
-            border: none;
-        }
+    body.dark input {
+        background: #475569;
+        color: white;
+        border: none;
+    }
 }

@@ -1,0 +1,53 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Продажа{% endblock %}
+{% block page_title %}Оформление продажи{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Продажа (чек)</h2>
+    <p>Добавьте товары и укажите количество</p>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody id="items">
+                <tr>
+                    <td>
+                        <select name="product">
+                            {% for product in products %}
+                            <option value="{{ product.id }}">{{ product.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" name="quantity" min="1">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" class="btn" onclick="addRow()">➕ Добавить товар</button>
+    </div>
+
+    <button type="submit" class="btn">💰 Оформить продажу</button>
+</form>
+
+<script>
+function addRow() {
+    const row = document.querySelector('#items tr').cloneNode(true);
+    document.getElementById('items').appendChild(row);
+}
+</script>
+
+{% endblock %}

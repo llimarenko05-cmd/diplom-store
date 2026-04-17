@@ -162,3 +162,45 @@ class ActionLog(models.Model):
     def __str__(self):
         username = self.user.username if self.user else "Неизвестный пользователь"
         return f"{username} - {self.get_action_type_display()}"
+
+class SaleOrder(models.Model):
+    created_at = models.DateTimeField("Дата продажи", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Продажа (чек)"
+        verbose_name_plural = "Продажи (чеки)"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Продажа #{self.id} от {self.created_at.strftime('%d.%m.%Y %H:%M')}"
+
+    @property
+    def total_amount(self):
+        return sum(item.total_price for item in self.items.all())
+
+
+class SaleItem(models.Model):
+    sale = models.ForeignKey(
+        SaleOrder,
+        on_delete=models.CASCADE,
+        related_name='items',
+        verbose_name="Продажа"
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        verbose_name="Товар"
+    )
+    quantity = models.PositiveIntegerField("Количество")
+    price = models.DecimalField("Цена", max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = "Позиция продажи"
+        verbose_name_plural = "Позиции продажи"
+
+    def __str__(self):
+        return f"{self.product.name} x {self.quantity}"
+
+    @property
+    def total_price(self):
+        return self.quantity * self.price

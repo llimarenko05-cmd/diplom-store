@@ -32,5 +32,5 @@ urlpatterns = [
     path('sales/report/', views.sales_report, name='sales_report'),
     path('sales/report/export/', views.export_sales_report_excel, name='export_sales_report_excel'),
 
-   
+   path('sales/new/', views.create_sale_order, name='create_sale_order'),
 ]

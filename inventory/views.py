@@ -802,3 +802,44 @@ def export_sales_report_excel(request):
     _autosize_columns(sheet)
 
     return _make_excel_response(workbook, 'sales_report.xlsx')
+
+@login_required
+def create_sale_order(request):
+    if not (_is_admin(request.user) or _is_seller(request.user)):
+        return _forbidden(request)
+
+    products = Product.objects.all()
+
+    if request.method == 'POST':
+        product_ids = request.POST.getlist('product')
+        quantities = request.POST.getlist('quantity')
+
+        sale_order = SaleOrder.objects.create()
+
+        for product_id, quantity in zip(product_ids, quantities):
+            if not quantity:
+                continue
+
+            quantity = int(quantity)
+            product = Product.objects.get(id=product_id)
+
+            if quantity > product.quantity:
+                messages.error(request, f'Недостаточно товара: {product.name}')
+                continue
+
+            SaleItem.objects.create(
+                sale=sale_order,
+                product=product,
+                quantity=quantity,
+                price=product.price
+            )
+
+            product.quantity -= quantity
+            product.save()
+
+        messages.success(request, 'Продажа оформлена')
+        return redirect('create_sale_order')
+
+    return render(request, 'inventory/create_sale_order.html', {
+        'products': products
+    })

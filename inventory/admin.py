@@ -53,3 +53,17 @@ class ActionLogAdmin(admin.ModelAdmin):
     list_display = ("id", "user", "action_type", "product", "created_at")
     list_filter = ("action_type", "created_at")
     search_fields = ("user__username", "product__name", "description")
+
+
+from .models import SaleOrder, SaleItem
+
+
+class SaleItemInline(admin.TabularInline):
+    model = SaleItem
+    extra = 1
+
+
+@admin.register(SaleOrder)
+class SaleOrderAdmin(admin.ModelAdmin):
+    list_display = ("id", "created_at", "total_amount")
+    inlines = [SaleItemInline]

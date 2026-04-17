@@ -13,7 +13,15 @@ from openpyxl import Workbook
 from openpyxl.styles import Font
 
 from .forms import ProductForm, SaleForm, StockReceiptForm
-from .models import ActionLog, Category, Product, Sale, StockReceipt, SaleOrder, SaleItem
+from .models import (
+    ActionLog,
+    Category,
+    Product,
+    Sale,
+    StockReceipt,
+    SaleOrder,
+    SaleItem,
+)
 
 
 def _forbidden(request, message='У вас нет прав для доступа к данной странице.'):
@@ -682,6 +690,102 @@ def create_sale(request):
 
 
 @login_required
+def create_sale_order(request):
+    if not (_is_admin(request.user) or _is_seller(request.user)):
+        return _forbidden(request)
+
+    products = Product.objects.all().order_by('name')
+
+    if request.method == 'POST':
+        product_ids = request.POST.getlist('product')
+        quantities = request.POST.getlist('quantity')
+
+        filled_items = []
+        errors_found = False
+
+        for product_id, quantity_value in zip(product_ids, quantities):
+            product_id = str(product_id).strip()
+            quantity_value = str(quantity_value).strip()
+
+            if not product_id and not quantity_value:
+                continue
+
+            if not product_id or not quantity_value:
+                errors_found = True
+                messages.error(request, 'Заполните товар и количество во всех строках продажи.')
+                continue
+
+            try:
+                quantity = int(quantity_value)
+            except ValueError:
+                errors_found = True
+                messages.error(request, 'Количество должно быть целым числом.')
+                continue
+
+            if quantity <= 0:
+                errors_found = True
+                messages.error(request, 'Количество должно быть больше нуля.')
+                continue
+
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                errors_found = True
+                messages.error(request, 'Один из выбранных товаров не найден.')
+                continue
+
+            if quantity > product.quantity:
+                errors_found = True
+                messages.error(request, f'Недостаточно товара на складе: {product.name}.')
+                continue
+
+            filled_items.append({
+                'product': product,
+                'quantity': quantity,
+            })
+
+        if not filled_items:
+            messages.error(request, 'Добавьте хотя бы один товар для продажи.')
+            return render(request, 'inventory/create_sale_order.html', {'products': products})
+
+        if errors_found:
+            return render(request, 'inventory/create_sale_order.html', {'products': products})
+
+        sale_order = SaleOrder.objects.create()
+
+        for item in filled_items:
+            product = item['product']
+            quantity = item['quantity']
+
+            SaleItem.objects.create(
+                sale=sale_order,
+                product=product,
+                quantity=quantity,
+                price=product.price
+            )
+
+            Sale.objects.create(
+                product=product,
+                quantity=quantity,
+                comment=f'Продажа по чеку №{sale_order.id}'
+            )
+
+            _log_action(
+                user=request.user,
+                action_type="CREATE_SALE",
+                product=product,
+                description=f'Оформлена продажа по чеку №{sale_order.id}: "{product.name}" в количестве {quantity}'
+            )
+
+        messages.success(request, f'Продажа оформлена. Чек №{sale_order.id}')
+        return redirect('create_sale_order')
+
+    return render(request, 'inventory/create_sale_order.html', {
+        'products': products
+    })
+
+
+@login_required
 def create_receipt(request):
     if not (_is_admin(request.user) or _is_merchandiser(request.user)):
         return _forbidden(request)
@@ -802,44 +906,3 @@ def export_sales_report_excel(request):
     _autosize_columns(sheet)
 
     return _make_excel_response(workbook, 'sales_report.xlsx')
-
-@login_required
-def create_sale_order(request):
-    if not (_is_admin(request.user) or _is_seller(request.user)):
-        return _forbidden(request)
-
-    products = Product.objects.all()
-
-    if request.method == 'POST':
-        product_ids = request.POST.getlist('product')
-        quantities = request.POST.getlist('quantity')
-
-        sale_order = SaleOrder.objects.create()
-
-        for product_id, quantity in zip(product_ids, quantities):
-            if not quantity:
-                continue
-
-            quantity = int(quantity)
-            product = Product.objects.get(id=product_id)
-
-            if quantity > product.quantity:
-                messages.error(request, f'Недостаточно товара: {product.name}')
-                continue
-
-            SaleItem.objects.create(
-                sale=sale_order,
-                product=product,
-                quantity=quantity,
-                price=product.price
-            )
-
-            product.quantity -= quantity
-            product.save()
-
-        messages.success(request, 'Продажа оформлена')
-        return redirect('create_sale_order')
-
-    return render(request, 'inventory/create_sale_order.html', {
-        'products': products
-    })

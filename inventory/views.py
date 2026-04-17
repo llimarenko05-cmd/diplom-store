@@ -3,7 +3,6 @@ from math import ceil
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.db.models import F, Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
@@ -643,8 +642,8 @@ def export_no_movement_excel(request):
 
 @login_required
 def action_log_list(request):
-    if not (_is_admin(request.user) or _is_merchandiser(request.user)):
-        return _forbidden(request)
+    if not _is_admin(request.user):
+        return _forbidden(request, 'Журнал действий доступен только администратору.')
 
     logs = ActionLog.objects.select_related('user', 'product').all().order_by('-created_at')[:200]
 
@@ -665,8 +664,6 @@ def create_sale(request):
             if sale.quantity > product.quantity:
                 messages.error(request, 'Недостаточно товара на складе для оформления продажи.')
             else:
-                product.quantity -= sale.quantity
-                product.save()
                 sale.save()
 
                 _log_action(
@@ -694,8 +691,7 @@ def create_receipt(request):
         if form.is_valid():
             receipt = form.save(commit=False)
             product = receipt.product
-            product.quantity += receipt.quantity
-            product.save()
+
             receipt.save()
 
             _log_action(
@@ -806,6 +802,3 @@ def export_sales_report_excel(request):
     _autosize_columns(sheet)
 
     return _make_excel_response(workbook, 'sales_report.xlsx')
-
-
-

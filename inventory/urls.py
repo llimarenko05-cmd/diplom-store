@@ -28,9 +28,11 @@ urlpatterns = [
 
     path('sales/create/', views.create_sale, name='create_sale'),
     path('sales/new/', views.create_sale_order, name='create_sale_order'),
+    path('sales/orders/<int:sale_order_id>/', views.sale_order_detail, name='sale_order_detail'),
 
     path('receipts/create/', views.create_receipt, name='create_receipt'),
     path('receipts/new/', views.create_receipt_order, name='create_receipt_order'),
+    path('receipts/orders/<int:receipt_order_id>/', views.receipt_order_detail, name='receipt_order_detail'),
 
     path('sales/report/', views.sales_report, name='sales_report'),
     path('sales/report/export/', views.export_sales_report_excel, name='export_sales_report_excel'),

@@ -821,11 +821,32 @@ def create_sale_order(request):
             )
 
         messages.success(request, f'Продажа оформлена. Чек №{sale_order.id}')
-        return redirect('create_sale_order')
+        return redirect('sale_order_detail', sale_order_id=sale_order.id)
 
     return render(request, 'inventory/create_sale_order.html', {
         'products': products
     })
+
+
+@login_required
+def sale_order_detail(request, sale_order_id):
+    if not (_is_admin(request.user) or _is_seller(request.user) or _is_merchandiser(request.user)):
+        return _forbidden(request)
+
+    sale_order = get_object_or_404(
+        SaleOrder.objects.prefetch_related('items__product'),
+        id=sale_order_id
+    )
+
+    items = sale_order.items.all()
+    total_quantity = sum(item.quantity for item in items)
+
+    context = {
+        'sale_order': sale_order,
+        'items': items,
+        'total_quantity': total_quantity,
+    }
+    return render(request, 'inventory/sale_order_detail.html', context)
 
 
 @login_required
@@ -966,12 +987,35 @@ def create_receipt_order(request):
             )
 
         messages.success(request, f'Поступление оформлено. Накладная №{receipt_order.id}')
-        return redirect('create_receipt_order')
+        return redirect('receipt_order_detail', receipt_order_id=receipt_order.id)
 
     return render(request, 'inventory/create_receipt_order.html', {
         'products': products,
         'suppliers': suppliers,
     })
+
+
+@login_required
+def receipt_order_detail(request, receipt_order_id):
+    if not (_is_admin(request.user) or _is_merchandiser(request.user) or _is_seller(request.user)):
+        return _forbidden(request)
+
+    receipt_order = get_object_or_404(
+        ReceiptOrder.objects.prefetch_related('items__product'),
+        id=receipt_order_id
+    )
+
+    items = receipt_order.items.all()
+    total_quantity = sum(item.quantity for item in items)
+    positions_count = items.count()
+
+    context = {
+        'receipt_order': receipt_order,
+        'items': items,
+        'total_quantity': total_quantity,
+        'positions_count': positions_count,
+    }
+    return render(request, 'inventory/receipt_order_detail.html', context)
 
 
 @login_required

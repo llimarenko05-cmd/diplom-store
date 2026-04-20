@@ -8,8 +8,8 @@
 <div class="card">
     <h2>Пользователи системы</h2>
     <p>
-        На этой странице администратор может просматривать список пользователей,
-        изменять их роли и удалять ненужные учетные записи.
+        На этой странице администратор может просматривать пользователей,
+        изменять их роли и удалять учетные записи.
     </p>
 </div>
 
@@ -24,7 +24,7 @@
                 <th>Email</th>
                 <th>Роль</th>
                 <th>Статус</th>
-                <th>Сменить роль</th>
+                <th>Смена роли</th>
                 <th>Удаление</th>
             </tr>
         </thead>
@@ -34,9 +34,12 @@
                 <td>
                     <strong>{{ item.username }}</strong>
                     {% if item.is_current_user %}
-                    <div style="font-size: 13px; margin-top: 6px;">Текущий пользователь</div>
+                    <div style="margin-top: 6px; font-size: 13px;">
+                        Текущий пользователь
+                    </div>
                     {% endif %}
                 </td>
+
                 <td>
                     {% if item.first_name or item.last_name %}
                     {{ item.first_name }} {{ item.last_name }}
@@ -44,6 +47,7 @@
                     -
                     {% endif %}
                 </td>
+
                 <td>
                     {% if item.email %}
                     {{ item.email }}
@@ -51,7 +55,9 @@
                     -
                     {% endif %}
                 </td>
+
                 <td>{{ item.role_name }}</td>
+
                 <td>
                     {% if item.is_active %}
                     <span class="status-ok">Активен</span>
@@ -59,23 +65,27 @@
                     <span class="status-critical">Неактивен</span>
                     {% endif %}
                 </td>
+
                 <td>
-                    <form method="post" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <form method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="change_role">
                         <input type="hidden" name="user_id" value="{{ item.id }}">
 
                         <select name="role">
-                            <option value="admin" {% if item.role_key= ='admin' %}selected{% endif %}>Администратор</option>
-                            <option value="merchandiser" {% if item.role_key= ='merchandiser' %}selected{% endif %}>Мерчендайзер</option>
-                            <option value="seller" {% if item.role_key= ='seller' %}selected{% endif %}>Продавец</option>
+                            <option value="admin" {% if item.role_key= ='admin' %} selected{% endif %}>Администратор</option>
+                            <option value="merchandiser" {% if item.role_key= ='merchandiser' %} selected{% endif %}>Мерчендайзер</option>
+                            <option value="seller" {% if item.role_key= ='seller' %} selected{% endif %}>Продавец</option>
                         </select>
 
-                        <button type="submit" class="btn btn-secondary">Сохранить</button>
+                        <button type="submit" class="btn btn-secondary" style="margin-top: 10px;">
+                            Сохранить
+                        </button>
                     </form>
                 </td>
+
                 <td>
-                    <form method="post" onsubmit="return confirm('Удалить пользователя {{ item.username }}?');">
+                    <form method="post" onsubmit="return confirm('Удалить пользователя?');">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="delete_user">
                         <input type="hidden" name="user_id" value="{{ item.id }}">

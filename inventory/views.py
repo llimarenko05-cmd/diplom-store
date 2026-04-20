@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 from math import ceil
 
 from django.contrib import messages
@@ -18,12 +18,12 @@ from .models import (
     ActionLog,
     Category,
     Product,
-    Sale,
-    StockReceipt,
-    SaleOrder,
-    SaleItem,
-    ReceiptOrder,
     ReceiptItem,
+    ReceiptOrder,
+    Sale,
+    SaleItem,
+    SaleOrder,
+    StockReceipt,
     Supplier,
 )
 
@@ -198,8 +198,12 @@ def home(request):
 
     for days_ago in range(6, -1, -1):
         current_date = today - timedelta(days=days_ago)
+
+        day_start = timezone.make_aware(datetime.combine(current_date, time.min))
+        day_end = timezone.make_aware(datetime.combine(current_date, time.max))
+
         day_total = (
-            Sale.objects.filter(sale_date__date=current_date)
+            Sale.objects.filter(sale_date__gte=day_start, sale_date__lte=day_end)
             .aggregate(total=Coalesce(Sum('quantity'), 0))['total']
         )
 
@@ -451,10 +455,7 @@ def create_product(request):
     else:
         form = ProductForm()
 
-    context = {
-        'form': form,
-    }
-    return render(request, 'inventory/create_product.html', context)
+    return render(request, 'inventory/create_product.html', {'form': form})
 
 
 @login_required
@@ -499,11 +500,7 @@ def edit_product(request, product_id):
     else:
         form = ProductForm(instance=product)
 
-    context = {
-        'form': form,
-        'product': product,
-    }
-    return render(request, 'inventory/edit_product.html', context)
+    return render(request, 'inventory/edit_product.html', {'form': form, 'product': product})
 
 
 @login_required
@@ -527,10 +524,7 @@ def delete_product(request, product_id):
         messages.success(request, f'Товар "{product_name}" успешно удалён.')
         return redirect('product_list')
 
-    context = {
-        'product': product,
-    }
-    return render(request, 'inventory/delete_product.html', context)
+    return render(request, 'inventory/delete_product.html', {'product': product})
 
 
 @login_required
@@ -650,7 +644,6 @@ def export_replenishment_excel(request):
         'Текущий остаток',
         'Минимальный остаток',
         'Средние продажи в день',
-        'Хватит на дней',
         'Рекомендуемый заказ',
         'Приоритет'
     ])
@@ -667,7 +660,6 @@ def export_replenishment_excel(request):
             product.quantity,
             product.minimum_quantity,
             product.avg_daily_sales,
-            product.days_left if product.days_left is not None else 'Нет продаж',
             product.recommended_order,
             product.replenishment_priority
         ])
@@ -787,7 +779,6 @@ def action_log_list(request):
         return _forbidden(request, 'Журнал действий доступен только администратору.')
 
     logs = ActionLog.objects.select_related('user', 'product').all().order_by('-created_at')[:200]
-
     return render(request, 'inventory/action_log_list.html', {'logs': logs})
 
 
@@ -913,9 +904,7 @@ def create_sale_order(request):
         messages.success(request, f'Продажа оформлена. Чек №{sale_order.id}')
         return redirect('sale_order_detail', sale_order_id=sale_order.id)
 
-    return render(request, 'inventory/create_sale_order.html', {
-        'products': products
-    })
+    return render(request, 'inventory/create_sale_order.html', {'products': products})
 
 
 @login_required

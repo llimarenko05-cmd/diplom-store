@@ -21,6 +21,8 @@ from .models import (
     StockReceipt,
     SaleOrder,
     SaleItem,
+    ReceiptOrder,
+    ReceiptItem,
 )
 
 
@@ -811,6 +813,102 @@ def create_receipt(request):
         form = StockReceiptForm()
 
     return render(request, 'inventory/create_receipt.html', {'form': form})
+
+
+@login_required
+def create_receipt_order(request):
+    if not (_is_admin(request.user) or _is_merchandiser(request.user)):
+        return _forbidden(request)
+
+    products = Product.objects.all().order_by('name')
+
+    if request.method == 'POST':
+        supplier_name = request.POST.get('supplier_name', '').strip()
+        product_ids = request.POST.getlist('product')
+        quantities = request.POST.getlist('quantity')
+
+        if not supplier_name:
+            messages.error(request, 'Укажите поставщика.')
+            return render(request, 'inventory/create_receipt_order.html', {'products': products})
+
+        filled_items = []
+        errors_found = False
+
+        for product_id, quantity_value in zip(product_ids, quantities):
+            product_id = str(product_id).strip()
+            quantity_value = str(quantity_value).strip()
+
+            if not product_id and not quantity_value:
+                continue
+
+            if not product_id or not quantity_value:
+                errors_found = True
+                messages.error(request, 'Заполните товар и количество во всех строках поступления.')
+                continue
+
+            try:
+                quantity = int(quantity_value)
+            except ValueError:
+                errors_found = True
+                messages.error(request, 'Количество должно быть целым числом.')
+                continue
+
+            if quantity <= 0:
+                errors_found = True
+                messages.error(request, 'Количество должно быть больше нуля.')
+                continue
+
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                errors_found = True
+                messages.error(request, 'Один из выбранных товаров не найден.')
+                continue
+
+            filled_items.append({
+                'product': product,
+                'quantity': quantity,
+            })
+
+        if not filled_items:
+            messages.error(request, 'Добавьте хотя бы один товар для поступления.')
+            return render(request, 'inventory/create_receipt_order.html', {'products': products})
+
+        if errors_found:
+            return render(request, 'inventory/create_receipt_order.html', {'products': products})
+
+        receipt_order = ReceiptOrder.objects.create(supplier_name=supplier_name)
+
+        for item in filled_items:
+            product = item['product']
+            quantity = item['quantity']
+
+            ReceiptItem.objects.create(
+                receipt=receipt_order,
+                product=product,
+                quantity=quantity
+            )
+
+            StockReceipt.objects.create(
+                product=product,
+                quantity=quantity,
+                supplier=supplier_name,
+                comment=f'Поступление по накладной №{receipt_order.id}'
+            )
+
+            _log_action(
+                user=request.user,
+                action_type="CREATE_RECEIPT",
+                product=product,
+                description=f'Оформлено поступление по накладной №{receipt_order.id}: "{product.name}" в количестве {quantity}'
+            )
+
+        messages.success(request, f'Поступление оформлено. Накладная №{receipt_order.id}')
+        return redirect('create_receipt_order')
+
+    return render(request, 'inventory/create_receipt_order.html', {
+        'products': products
+    })
 
 
 @login_required

@@ -1,0 +1,69 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Поступление{% endblock %}
+{% block page_title %}Оформление поступления{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Поступление (накладная)</h2>
+    <p>Укажите поставщика, добавьте товары и количество</p>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="card" style="margin-bottom: 24px;">
+        <label for="supplier_name" style="display: block; font-weight: 600; margin-bottom: 10px;">
+            Поставщик
+        </label>
+        <input type="text"
+               id="supplier_name"
+               name="supplier_name"
+               placeholder="Введите название поставщика"
+               style="width: 100%; max-width: 520px;"
+               required>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody id="receipt-items">
+                <tr>
+                    <td>
+                        <select name="product">
+                            {% for product in products %}
+                            <option value="{{ product.id }}">{{ product.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" name="quantity" min="1">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" class="btn" onclick="addReceiptRow()">➕ Добавить товар</button>
+    </div>
+
+    <button type="submit" class="btn">📦 Оформить поступление</button>
+</form>
+
+<script>
+function addReceiptRow() {
+    const row = document.querySelector('#receipt-items tr').cloneNode(true);
+    const quantityInput = row.querySelector('input[name="quantity"]');
+    if (quantityInput) {
+        quantityInput.value = '';
+    }
+    document.getElementById('receipt-items').appendChild(row);
+}
+</script>
+
+{% endblock %}

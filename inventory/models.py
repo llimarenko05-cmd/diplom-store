@@ -127,42 +127,6 @@ class Sale(models.Model):
         return f"Продажа: {self.product.name} - {self.quantity}"
 
 
-class ActionLog(models.Model):
-    ACTION_CHOICES = [
-        ("CREATE_PRODUCT", "Добавление товара"),
-        ("UPDATE_PRODUCT", "Редактирование товара"),
-        ("DELETE_PRODUCT", "Удаление товара"),
-        ("CREATE_SALE", "Оформление продажи"),
-        ("CREATE_RECEIPT", "Оформление поступления"),
-    ]
-
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name="Пользователь"
-    )
-    action_type = models.CharField("Тип действия", max_length=50, choices=ACTION_CHOICES)
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name="Товар"
-    )
-    description = models.TextField("Описание")
-    created_at = models.DateTimeField("Дата и время", default=timezone.now)
-
-    class Meta:
-        verbose_name = "Журнал действий"
-        verbose_name_plural = "Журнал действий"
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        username = self.user.username if self.user else "Неизвестный пользователь"
-        return f"{username} - {self.get_action_type_display()}"
-
 class SaleOrder(models.Model):
     created_at = models.DateTimeField("Дата продажи", auto_now_add=True)
 
@@ -204,3 +168,79 @@ class SaleItem(models.Model):
     @property
     def total_price(self):
         return self.quantity * self.price
+
+
+class ReceiptOrder(models.Model):
+    created_at = models.DateTimeField("Дата поступления", auto_now_add=True)
+    supplier_name = models.CharField("Поставщик", max_length=200)
+
+    class Meta:
+        verbose_name = "Поступление (накладная)"
+        verbose_name_plural = "Поступления (накладные)"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Накладная #{self.id} от {self.created_at.strftime('%d.%m.%Y %H:%M')}"
+
+    @property
+    def total_items_count(self):
+        return sum(item.quantity for item in self.items.all())
+
+
+class ReceiptItem(models.Model):
+    receipt = models.ForeignKey(
+        ReceiptOrder,
+        on_delete=models.CASCADE,
+        related_name='items',
+        verbose_name="Накладная"
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        verbose_name="Товар"
+    )
+    quantity = models.PositiveIntegerField("Количество")
+
+    class Meta:
+        verbose_name = "Позиция поступления"
+        verbose_name_plural = "Позиции поступления"
+
+    def __str__(self):
+        return f"{self.product.name} x {self.quantity}"
+
+
+class ActionLog(models.Model):
+    ACTION_CHOICES = [
+        ("CREATE_PRODUCT", "Добавление товара"),
+        ("UPDATE_PRODUCT", "Редактирование товара"),
+        ("DELETE_PRODUCT", "Удаление товара"),
+        ("CREATE_SALE", "Оформление продажи"),
+        ("CREATE_RECEIPT", "Оформление поступления"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Пользователь"
+    )
+    action_type = models.CharField("Тип действия", max_length=50, choices=ACTION_CHOICES)
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Товар"
+    )
+    description = models.TextField("Описание")
+    created_at = models.DateTimeField("Дата и время", default=timezone.now)
+
+    class Meta:
+        verbose_name = "Журнал действий"
+        verbose_name_plural = "Журнал действий"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        username = self.user.username if self.user else "Неизвестный пользователь"
+        return f"{username} - {self.get_action_type_display()}"

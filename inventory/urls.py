@@ -27,10 +27,11 @@ urlpatterns = [
     path('action-log/', views.action_log_list, name='action_log_list'),
 
     path('sales/create/', views.create_sale, name='create_sale'),
+    path('sales/new/', views.create_sale_order, name='create_sale_order'),
+
     path('receipts/create/', views.create_receipt, name='create_receipt'),
+    path('receipts/new/', views.create_receipt_order, name='create_receipt_order'),
 
     path('sales/report/', views.sales_report, name='sales_report'),
     path('sales/report/export/', views.export_sales_report_excel, name='export_sales_report_excel'),
-
-   path('sales/new/', views.create_sale_order, name='create_sale_order'),
 ]

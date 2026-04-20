@@ -1,78 +1,57 @@
 {% extends 'inventory/base.html' %}
 
 {% block title %}Требуют пополнения{% endblock %}
-{% block page_title %}Требуют пополнения{% endblock %}
+{% block page_title %}Товары, требующие пополнения{% endblock %}
 
 {% block content %}
 
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px;">
-        <div>
-            <h2 style="margin-bottom: 8px;">Товары для пополнения</h2>
-            <p>
-                На этой странице отображаются товары, у которых остаток ниже минимально допустимого значения.
-                Для каждой позиции рассчитываются средние продажи, примерный запас по дням,
-                рекомендуемый объём заказа и приоритет пополнения.
-            </p>
-        </div>
-
-        <a href="{% url 'export_replenishment_excel' %}" class="btn btn-secondary">Экспорт в Excel</a>
-    </div>
-</div>
-
-<div class="card">
     <h2>Список товаров</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Наименование</th>
-                <th>Категория</th>
-                <th>Пол</th>
-                <th>Артикул</th>
-                <th>Остаток</th>
-                <th>Мин. остаток</th>
-                <th>Средние продажи в день</th>
-                <th>Хватит на дней</th>
-                <th>Рекомендуемый заказ</th>
-                <th>Приоритет</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-            <tr>
-                <td><strong>{{ product.name }}</strong></td>
-                <td>{{ product.category }}</td>
-                <td>{{ product.gender }}</td>
-                <td>{{ product.article }}</td>
-                <td>{{ product.quantity }}</td>
-                <td>{{ product.minimum_quantity }}</td>
-                <td>{{ product.avg_daily_sales }}</td>
-                <td>
-                    {% if product.days_left is not None %}
-                    {{ product.days_left }}
-                    {% else %}
-                    Нет продаж
-                    {% endif %}
-                </td>
-                <td>{{ product.recommended_order }}</td>
-                <td>
-                    {% if product.replenishment_priority == 'Высокий' %}
-                    <span class="priority-badge priority-high">Высокий</span>
-                    {% elif product.replenishment_priority == 'Средний' %}
-                    <span class="priority-badge priority-medium">Средний</span>
-                    {% else %}
-                    <span class="priority-badge priority-low">Низкий</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="10">Нет товаров, требующих пополнения.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-wrapper">
+        <table class="compact-table">
+            <thead>
+                <tr>
+                    <th>Наименование</th>
+                    <th>Категория</th>
+                    <th>Пол</th>
+                    <th>Артикул</th>
+                    <th>Остаток</th>
+                    <th>Мин. остаток</th>
+                    <th>Средние продажи в день</th>
+                    <th>Рекомендуемый заказ</th>
+                    <th>Приоритет</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category }}</td>
+                    <td>{{ product.gender }}</td>
+                    <td>{{ product.article }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.minimum_quantity }}</td>
+                    <td>{{ product.avg_daily_sales }}</td>
+                    <td>{{ product.recommended_order }}</td>
+                    <td>
+                        {% if product.replenishment_priority == 'Высокий' %}
+                        <span class="status-critical">Высокий</span>
+                        {% elif product.replenishment_priority == 'Средний' %}
+                        <span class="status-min">Средний</span>
+                        {% else %}
+                        <span class="status-ok">Низкий</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9">Нет товаров, требующих пополнения.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}

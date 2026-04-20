@@ -7,94 +7,95 @@
 
 <div class="card">
     <h2>Пользователи системы</h2>
-    <p>На этой странице администратор может менять роли пользователей и удалять учетные записи.</p>
+    <p>Администратор может просматривать пользователей, изменять их роли и удалять учетные записи.</p>
 </div>
 
 <div class="card">
-    <table>
-        <thead>
-            <tr>
-                <th>Логин</th>
-                <th>Имя</th>
-                <th>Email</th>
-                <th>Роль</th>
-                <th>Статус</th>
-                <th>Изменить роль</th>
-                <th>Удалить</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in users %}
-            <tr>
-                <td>
-                    <strong>{{ item.username }}</strong>
-                    {% if item.is_current_user %}
-                    <br>
-                    <small>(Вы)</small>
-                    {% endif %}
-                </td>
+    <div class="table-wrapper">
+        <table class="compact-table users-table">
+            <thead>
+                <tr>
+                    <th>Логин</th>
+                    <th>Имя</th>
+                    <th>Email</th>
+                    <th>Роль</th>
+                    <th>Статус</th>
+                    <th>Изменить роль</th>
+                    <th>Удалить</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in users %}
+                <tr>
+                    <td>
+                        <strong>{{ item.username }}</strong>
+                        {% if item.is_current_user %}
+                        <div class="muted-text">(Вы)</div>
+                        {% endif %}
+                    </td>
 
-                <td>
-                    {% if item.first_name or item.last_name %}
-                    {{ item.first_name }} {{ item.last_name }}
-                    {% else %}
-                    -
-                    {% endif %}
-                </td>
+                    <td>
+                        {% if item.first_name or item.last_name %}
+                        {{ item.first_name }} {{ item.last_name }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
 
-                <td>
-                    {% if item.email %}
-                    {{ item.email }}
-                    {% else %}
-                    -
-                    {% endif %}
-                </td>
+                    <td class="email-cell">
+                        {% if item.email %}
+                        {{ item.email }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
 
-                <td>{{ item.role_name }}</td>
+                    <td>{{ item.role_name }}</td>
 
-                <td>
-                    {% if item.is_active %}
-                    <span class="status-ok">Активен</span>
-                    {% else %}
-                    <span class="status-critical">Неактивен</span>
-                    {% endif %}
-                </td>
+                    <td>
+                        {% if item.is_active %}
+                        <span class="status-ok">Активен</span>
+                        {% else %}
+                        <span class="status-critical">Неактивен</span>
+                        {% endif %}
+                    </td>
 
-                <td>
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="change_role">
-                        <input type="hidden" name="user_id" value="{{ item.id }}">
+                    <td>
+                        <form method="post" class="user-role-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="change_role">
+                            <input type="hidden" name="user_id" value="{{ item.id }}">
 
-                        <select name="role">
-                            <option value="admin" {% if item.role_key == 'admin' %}selected{% endif %}>Администратор</option>
-                            <option value="merchandiser" {% if item.role_key == 'merchandiser' %}selected{% endif %}>Мерчендайзер</option>
-                            <option value="seller" {% if item.role_key == 'seller' %}selected{% endif %}>Продавец</option>
-                        </select>
+                            <select name="role" class="role-select">
+                                <option value="admin" {% if item.role_key == 'admin' %}selected{% endif %}>Администратор</option>
+                                <option value="merchandiser" {% if item.role_key == 'merchandiser' %}selected{% endif %}>Мерчендайзер</option>
+                                <option value="seller" {% if item.role_key == 'seller' %}selected{% endif %}>Продавец</option>
+                            </select>
 
-                        <button type="submit" class="btn btn-secondary">Сохранить</button>
-                    </form>
-                </td>
+                            <button type="submit" class="btn btn-secondary small-btn">Сохранить</button>
+                        </form>
+                    </td>
 
-                <td>
-                    <form method="post" onsubmit="return confirm('Удалить пользователя?');">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="delete_user">
-                        <input type="hidden" name="user_id" value="{{ item.id }}">
+                    <td>
+                        <form method="post" onsubmit="return confirm('Удалить пользователя?');" class="delete-user-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_user">
+                            <input type="hidden" name="user_id" value="{{ item.id }}">
 
-                        <button type="submit" class="btn btn-danger" {% if item.is_current_user %}disabled{% endif %}>
-                            Удалить
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7">Пользователи не найдены.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                            <button type="submit" class="btn btn-danger small-btn" {% if item.is_current_user %}disabled{% endif %}>
+                                Удалить
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">Пользователи не найдены.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}

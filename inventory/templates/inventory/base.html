@@ -12,46 +12,116 @@
     <div class="layout">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Склад</h2>
-                <p>Система управления запасами</p>
+                <div class="logo-box">
+                    <span class="logo-icon">▣</span>
+                    <div>
+                        <h2>Склад</h2>
+                        <p>Управление запасами</p>
+                    </div>
+                </div>
             </div>
 
             <nav class="sidebar-menu">
                 {% if is_admin_role %}
-                <a href="/">Главная</a>
-                <a href="/users/">Пользователи</a>
-                <a href="/products/">Товары</a>
-                <a href="/stock/">Остатки</a>
-                <a href="/low-stock/">Низкий остаток</a>
-                <a href="/replenishment/">Требуют пополнения</a>
-                <a href="/no-movement/">Товары без движения</a>
-                <a href="/action-log/">Журнал действий</a>
-                <a href="/sales/new/">Продажа</a>
-                <a href="/receipts/new/">Поступление</a>
-                <a href="/sales/report/">Отчёт</a>
+                <a href="/" class="menu-link">
+                    <span class="menu-icon">⌂</span>
+                    <span>Главная</span>
+                </a>
+                <a href="/users/" class="menu-link">
+                    <span class="menu-icon">◉</span>
+                    <span>Пользователи</span>
+                </a>
+                <a href="/products/" class="menu-link">
+                    <span class="menu-icon">◫</span>
+                    <span>Товары</span>
+                </a>
+                <a href="/stock/" class="menu-link">
+                    <span class="menu-icon">◬</span>
+                    <span>Остатки</span>
+                </a>
+                <a href="/low-stock/" class="menu-link">
+                    <span class="menu-icon">!</span>
+                    <span>Низкий остаток</span>
+                </a>
+                <a href="/replenishment/" class="menu-link">
+                    <span class="menu-icon">↻</span>
+                    <span>Пополнение</span>
+                </a>
+                <a href="/no-movement/" class="menu-link">
+                    <span class="menu-icon">□</span>
+                    <span>Без движения</span>
+                </a>
+                <a href="/action-log/" class="menu-link">
+                    <span class="menu-icon">≡</span>
+                    <span>Журнал действий</span>
+                </a>
+                <a href="/sales/new/" class="menu-link">
+                    <span class="menu-icon">₽</span>
+                    <span>Продажа</span>
+                </a>
+                <a href="/receipts/new/" class="menu-link">
+                    <span class="menu-icon">+</span>
+                    <span>Поступление</span>
+                </a>
+                <a href="/sales/report/" class="menu-link">
+                    <span class="menu-icon">◧</span>
+                    <span>Отчёт</span>
+                </a>
                 {% endif %}
 
                 {% if is_merchandiser_role and not is_admin_role %}
-                <a href="/">Главная</a>
-                <a href="/stock/">Остатки</a>
-                <a href="/low-stock/">Низкий остаток</a>
-                <a href="/replenishment/">Пополнение</a>
-                <a href="/no-movement/">Без движения</a>
-                <a href="/receipts/new/">Поступление</a>
-                <a href="/sales/report/">Отчёт</a>
+                <a href="/" class="menu-link">
+                    <span class="menu-icon">⌂</span>
+                    <span>Главная</span>
+                </a>
+                <a href="/stock/" class="menu-link">
+                    <span class="menu-icon">◬</span>
+                    <span>Остатки</span>
+                </a>
+                <a href="/low-stock/" class="menu-link">
+                    <span class="menu-icon">!</span>
+                    <span>Низкий остаток</span>
+                </a>
+                <a href="/replenishment/" class="menu-link">
+                    <span class="menu-icon">↻</span>
+                    <span>Пополнение</span>
+                </a>
+                <a href="/no-movement/" class="menu-link">
+                    <span class="menu-icon">□</span>
+                    <span>Без движения</span>
+                </a>
+                <a href="/receipts/new/" class="menu-link">
+                    <span class="menu-icon">+</span>
+                    <span>Поступление</span>
+                </a>
+                <a href="/sales/report/" class="menu-link">
+                    <span class="menu-icon">◧</span>
+                    <span>Отчёт</span>
+                </a>
                 {% endif %}
 
                 {% if is_seller_role and not is_admin_role %}
-                <a href="/products/">Товары</a>
-                <a href="/stock/">Остатки</a>
-                <a href="/sales/new/">Продажа</a>
+                <a href="/products/" class="menu-link">
+                    <span class="menu-icon">◫</span>
+                    <span>Товары</span>
+                </a>
+                <a href="/stock/" class="menu-link">
+                    <span class="menu-icon">◬</span>
+                    <span>Остатки</span>
+                </a>
+                <a href="/sales/new/" class="menu-link">
+                    <span class="menu-icon">₽</span>
+                    <span>Продажа</span>
+                </a>
                 {% endif %}
             </nav>
         </aside>
 
         <div class="main-area">
             <header class="topbar">
-                <h1>{% block page_title %}{% endblock %}</h1>
+                <div class="page-title-wrap">
+                    <h1>{% block page_title %}{% endblock %}</h1>
+                </div>
 
                 <div class="topbar-right">
                     <button type="button" class="btn btn-secondary" id="theme-toggle">Тёмная тема</button>
@@ -91,7 +161,9 @@
 
         if (savedTheme === 'dark') {
             document.body.classList.add('dark');
-            if (themeButton) themeButton.textContent = 'Светлая тема';
+            if (themeButton) {
+                themeButton.textContent = 'Светлая тема';
+            }
         }
 
         if (themeButton) {

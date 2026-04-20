@@ -7,15 +7,10 @@
 
 <div class="card">
     <h2>Пользователи системы</h2>
-    <p>
-        На этой странице администратор может просматривать пользователей,
-        изменять их роли и удалять учетные записи.
-    </p>
+    <p>На этой странице администратор может менять роли пользователей и удалять учетные записи.</p>
 </div>
 
 <div class="card">
-    <h2>Список пользователей</h2>
-
     <table>
         <thead>
             <tr>
@@ -24,8 +19,8 @@
                 <th>Email</th>
                 <th>Роль</th>
                 <th>Статус</th>
-                <th>Смена роли</th>
-                <th>Удаление</th>
+                <th>Изменить роль</th>
+                <th>Удалить</th>
             </tr>
         </thead>
         <tbody>
@@ -34,9 +29,8 @@
                 <td>
                     <strong>{{ item.username }}</strong>
                     {% if item.is_current_user %}
-                    <div style="margin-top: 6px; font-size: 13px;">
-                        Текущий пользователь
-                    </div>
+                    <br>
+                    <small>(Вы)</small>
                     {% endif %}
                 </td>
 
@@ -73,14 +67,12 @@
                         <input type="hidden" name="user_id" value="{{ item.id }}">
 
                         <select name="role">
-                            <option value="admin" {% if item.role_key= ='admin' %} selected{% endif %}>Администратор</option>
-                            <option value="merchandiser" {% if item.role_key= ='merchandiser' %} selected{% endif %}>Мерчендайзер</option>
-                            <option value="seller" {% if item.role_key= ='seller' %} selected{% endif %}>Продавец</option>
+                            <option value="admin" {% if item.role_key == 'admin' %}selected{% endif %}>Администратор</option>
+                            <option value="merchandiser" {% if item.role_key == 'merchandiser' %}selected{% endif %}>Мерчендайзер</option>
+                            <option value="seller" {% if item.role_key == 'seller' %}selected{% endif %}>Продавец</option>
                         </select>
 
-                        <button type="submit" class="btn btn-secondary" style="margin-top: 10px;">
-                            Сохранить
-                        </button>
+                        <button type="submit" class="btn btn-secondary">Сохранить</button>
                     </form>
                 </td>
 

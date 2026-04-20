@@ -131,6 +131,7 @@ def home(request):
     products_count = Product.objects.count()
     categories_count = Category.objects.count()
     low_stock_count = Product.objects.filter(quantity__lte=F('minimum_quantity')).count()
+    critical_stock_count = Product.objects.filter(quantity__lt=F('minimum_quantity')).count()
 
     top_product = (
         Sale.objects.values('product__name')
@@ -171,18 +172,57 @@ def home(request):
     )
     top_replenishment_products = replenishment_products[:5]
 
+    sales_period_start = timezone.now() - timedelta(days=30)
+    sales_last_30 = Sale.objects.select_related('product').filter(sale_date__gte=sales_period_start)
+
+    total_sales_last_30 = sales_last_30.aggregate(
+        total=Coalesce(Sum('quantity'), 0)
+    )['total']
+
+    total_revenue_last_30 = round(
+        sum(item.quantity * float(item.product.price) for item in sales_last_30),
+        2
+    )
+
+    top_products_last_30 = (
+        Sale.objects.filter(sale_date__gte=sales_period_start)
+        .values('product__name')
+        .annotate(total_sold=Coalesce(Sum('quantity'), 0))
+        .order_by('-total_sold', 'product__name')[:5]
+    )
+
+    today = timezone.localdate()
+    sales_trend_labels = []
+    sales_trend_data = []
+
+    for days_ago in range(6, -1, -1):
+        current_date = today - timedelta(days=days_ago)
+        day_total = (
+            Sale.objects.filter(sale_date__date=current_date)
+            .aggregate(total=Coalesce(Sum('quantity'), 0))['total']
+        )
+
+        sales_trend_labels.append(current_date.strftime('%d.%m'))
+        sales_trend_data.append(day_total)
+
     context = {
         'products_count': products_count,
         'categories_count': categories_count,
         'low_stock_count': low_stock_count,
+        'critical_stock_count': critical_stock_count,
         'no_movement_count': no_movement_count,
         'top_product': top_product,
         'chart_labels': chart_labels,
         'chart_data': chart_data,
+        'sales_trend_labels': sales_trend_labels,
+        'sales_trend_data': sales_trend_data,
         'top_replenishment_products': top_replenishment_products,
+        'top_products_last_30': top_products_last_30,
         'no_movement_products': no_movement_products,
         'latest_sales': latest_sales,
         'latest_receipts': latest_receipts,
+        'total_sales_last_30': total_sales_last_30,
+        'total_revenue_last_30': total_revenue_last_30,
     }
     return render(request, 'inventory/home.html', context)
 

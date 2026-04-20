@@ -22,8 +22,23 @@
     </div>
 
     <div class="stat-box">
+        <h3>Критически мало</h3>
+        <p>{{ critical_stock_count }}</p>
+    </div>
+
+    <div class="stat-box">
         <h3>Без движения</h3>
         <p>{{ no_movement_count }}</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Продано за 30 дней</h3>
+        <p>{{ total_sales_last_30 }}</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Сумма продаж за 30 дней</h3>
+        <p>{{ total_revenue_last_30 }}</p>
     </div>
 </div>
 
@@ -43,6 +58,35 @@
 <div class="card">
     <h2>График текущих остатков</h2>
     <canvas id="stockChart"></canvas>
+</div>
+
+<div class="card">
+    <h2>Продажи за последние 7 дней</h2>
+    <canvas id="salesTrendChart"></canvas>
+</div>
+
+<div class="card">
+    <h2>Топ-5 товаров по продажам за 30 дней</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Продано</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in top_products_last_30 %}
+            <tr>
+                <td>{{ item.product__name }}</td>
+                <td>{{ item.total_sold }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Продаж за последние 30 дней нет.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 <div class="card">
@@ -188,14 +232,21 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 {{ chart_labels|json_script:"stock-chart-labels" }}
 {{ chart_data|json_script:"stock-chart-data" }}
+{{ sales_trend_labels|json_script:"sales-trend-labels" }}
+{{ sales_trend_data|json_script:"sales-trend-data" }}
 
 <script>
     const stockLabels = JSON.parse(document.getElementById('stock-chart-labels').textContent);
     const stockData = JSON.parse(document.getElementById('stock-chart-data').textContent);
 
+    const salesTrendLabels = JSON.parse(document.getElementById('sales-trend-labels').textContent);
+    const salesTrendData = JSON.parse(document.getElementById('sales-trend-data').textContent);
+
     const stockCtx = document.getElementById('stockChart').getContext('2d');
+    const salesTrendCtx = document.getElementById('salesTrendChart').getContext('2d');
 
     new Chart(stockCtx, {
         type: 'bar',
@@ -205,6 +256,33 @@
                 label: 'Количество товара на складе',
                 data: stockData,
                 borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    new Chart(salesTrendCtx, {
+        type: 'line',
+        data: {
+            labels: salesTrendLabels,
+            datasets: [{
+                label: 'Проданные единицы',
+                data: salesTrendData,
+                borderWidth: 2,
+                tension: 0.3,
+                fill: false
             }]
         },
         options: {

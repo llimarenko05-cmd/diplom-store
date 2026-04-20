@@ -7,22 +7,23 @@
 
 <div class="card">
     <h2>Поступление (накладная)</h2>
-    <p>Укажите поставщика, добавьте товары и количество</p>
+    <p>Выберите поставщика из базы, добавьте товары и количество</p>
 </div>
 
 <form method="post">
     {% csrf_token %}
 
     <div class="card" style="margin-bottom: 24px;">
-        <label for="supplier_name" style="display: block; font-weight: 600; margin-bottom: 10px;">
+        <label for="supplier_id" style="display: block; font-weight: 600; margin-bottom: 10px;">
             Поставщик
         </label>
-        <input type="text"
-               id="supplier_name"
-               name="supplier_name"
-               placeholder="Введите название поставщика"
-               style="width: 100%; max-width: 520px;"
-               required>
+
+        <select id="supplier_id" name="supplier_id" style="width: 100%; max-width: 520px;" required>
+            <option value="">Выберите поставщика</option>
+            {% for supplier in suppliers %}
+            <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+            {% endfor %}
+        </select>
     </div>
 
     <div class="card">
@@ -56,14 +57,14 @@
 </form>
 
 <script>
-function addReceiptRow() {
-    const row = document.querySelector('#receipt-items tr').cloneNode(true);
-    const quantityInput = row.querySelector('input[name="quantity"]');
-    if (quantityInput) {
-        quantityInput.value = '';
+    function addReceiptRow() {
+        const row = document.querySelector('#receipt-items tr').cloneNode(true);
+        const quantityInput = row.querySelector('input[name="quantity"]');
+        if (quantityInput) {
+            quantityInput.value = '';
+        }
+        document.getElementById('receipt-items').appendChild(row);
     }
-    document.getElementById('receipt-items').appendChild(row);
-}
 </script>
 
 {% endblock %}

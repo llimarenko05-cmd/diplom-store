@@ -23,6 +23,7 @@ from .models import (
     SaleItem,
     ReceiptOrder,
     ReceiptItem,
+    Supplier,
 )
 
 
@@ -821,15 +822,30 @@ def create_receipt_order(request):
         return _forbidden(request)
 
     products = Product.objects.all().order_by('name')
+    suppliers = Supplier.objects.all().order_by('name')
 
     if request.method == 'POST':
-        supplier_name = request.POST.get('supplier_name', '').strip()
+        supplier_id = request.POST.get('supplier_id', '').strip()
         product_ids = request.POST.getlist('product')
         quantities = request.POST.getlist('quantity')
 
-        if not supplier_name:
-            messages.error(request, 'Укажите поставщика.')
-            return render(request, 'inventory/create_receipt_order.html', {'products': products})
+        if not supplier_id:
+            messages.error(request, 'Выберите поставщика.')
+            return render(request, 'inventory/create_receipt_order.html', {
+                'products': products,
+                'suppliers': suppliers,
+            })
+
+        try:
+            supplier = Supplier.objects.get(id=supplier_id)
+        except Supplier.DoesNotExist:
+            messages.error(request, 'Выбранный поставщик не найден.')
+            return render(request, 'inventory/create_receipt_order.html', {
+                'products': products,
+                'suppliers': suppliers,
+            })
+
+        supplier_name = supplier.name
 
         filled_items = []
         errors_found = False
@@ -872,10 +888,16 @@ def create_receipt_order(request):
 
         if not filled_items:
             messages.error(request, 'Добавьте хотя бы один товар для поступления.')
-            return render(request, 'inventory/create_receipt_order.html', {'products': products})
+            return render(request, 'inventory/create_receipt_order.html', {
+                'products': products,
+                'suppliers': suppliers,
+            })
 
         if errors_found:
-            return render(request, 'inventory/create_receipt_order.html', {'products': products})
+            return render(request, 'inventory/create_receipt_order.html', {
+                'products': products,
+                'suppliers': suppliers,
+            })
 
         receipt_order = ReceiptOrder.objects.create(supplier_name=supplier_name)
 
@@ -907,7 +929,8 @@ def create_receipt_order(request):
         return redirect('create_receipt_order')
 
     return render(request, 'inventory/create_receipt_order.html', {
-        'products': products
+        'products': products,
+        'suppliers': suppliers,
     })
 
 

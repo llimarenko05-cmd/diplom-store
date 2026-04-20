@@ -1,0 +1,98 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Пользователи{% endblock %}
+{% block page_title %}Управление пользователями{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>Пользователи системы</h2>
+    <p>
+        На этой странице администратор может просматривать список пользователей,
+        изменять их роли и удалять ненужные учетные записи.
+    </p>
+</div>
+
+<div class="card">
+    <h2>Список пользователей</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Логин</th>
+                <th>Имя</th>
+                <th>Email</th>
+                <th>Роль</th>
+                <th>Статус</th>
+                <th>Сменить роль</th>
+                <th>Удаление</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in users %}
+            <tr>
+                <td>
+                    <strong>{{ item.username }}</strong>
+                    {% if item.is_current_user %}
+                    <div style="font-size: 13px; margin-top: 6px;">Текущий пользователь</div>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.first_name or item.last_name %}
+                    {{ item.first_name }} {{ item.last_name }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.email %}
+                    {{ item.email }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td>{{ item.role_name }}</td>
+                <td>
+                    {% if item.is_active %}
+                    <span class="status-ok">Активен</span>
+                    {% else %}
+                    <span class="status-critical">Неактивен</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="post" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="change_role">
+                        <input type="hidden" name="user_id" value="{{ item.id }}">
+
+                        <select name="role">
+                            <option value="admin" {% if item.role_key= ='admin' %}selected{% endif %}>Администратор</option>
+                            <option value="merchandiser" {% if item.role_key= ='merchandiser' %}selected{% endif %}>Мерчендайзер</option>
+                            <option value="seller" {% if item.role_key= ='seller' %}selected{% endif %}>Продавец</option>
+                        </select>
+
+                        <button type="submit" class="btn btn-secondary">Сохранить</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" onsubmit="return confirm('Удалить пользователя {{ item.username }}?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_user">
+                        <input type="hidden" name="user_id" value="{{ item.id }}">
+
+                        <button type="submit" class="btn btn-danger" {% if item.is_current_user %}disabled{% endif %}>
+                            Удалить
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">Пользователи не найдены.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

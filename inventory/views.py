@@ -3,6 +3,7 @@ from math import ceil
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group, User
 from django.db.models import F, Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
@@ -225,6 +226,95 @@ def home(request):
         'total_revenue_last_30': total_revenue_last_30,
     }
     return render(request, 'inventory/home.html', context)
+
+
+@login_required
+def user_list(request):
+    if not _is_admin(request.user):
+        return _forbidden(request, 'Управление пользователями доступно только администратору.')
+
+    admin_group, _ = Group.objects.get_or_create(name='Администратор')
+    merch_group, _ = Group.objects.get_or_create(name='Мерчендайзер')
+    seller_group, _ = Group.objects.get_or_create(name='Продавец')
+
+    if request.method == 'POST':
+        action = request.POST.get('action', '').strip()
+        user_id = request.POST.get('user_id', '').strip()
+
+        if not user_id:
+            messages.error(request, 'Пользователь не выбран.')
+            return redirect('user_list')
+
+        managed_user = get_object_or_404(User, id=user_id)
+
+        if action == 'change_role':
+            new_role = request.POST.get('role', '').strip()
+
+            managed_user.groups.clear()
+
+            if new_role == 'admin':
+                managed_user.groups.add(admin_group)
+                role_name = 'Администратор'
+            elif new_role == 'merchandiser':
+                managed_user.groups.add(merch_group)
+                role_name = 'Мерчендайзер'
+            elif new_role == 'seller':
+                managed_user.groups.add(seller_group)
+                role_name = 'Продавец'
+            else:
+                messages.error(request, 'Выбрана некорректная роль.')
+                return redirect('user_list')
+
+            managed_user.is_superuser = False
+            managed_user.is_staff = True
+            managed_user.save()
+
+            messages.success(request, f'Роль пользователя "{managed_user.username}" изменена на "{role_name}".')
+            return redirect('user_list')
+
+        if action == 'delete_user':
+            if managed_user == request.user:
+                messages.error(request, 'Нельзя удалить текущего пользователя.')
+                return redirect('user_list')
+
+            username = managed_user.username
+            managed_user.delete()
+            messages.success(request, f'Пользователь "{username}" удалён.')
+            return redirect('user_list')
+
+        messages.error(request, 'Неизвестное действие.')
+        return redirect('user_list')
+
+    users = User.objects.all().order_by('username')
+
+    users_data = []
+    for user in users:
+        role_name = 'Без роли'
+        role_key = ''
+
+        if user.is_superuser or user.groups.filter(name='Администратор').exists():
+            role_name = 'Администратор'
+            role_key = 'admin'
+        elif user.groups.filter(name='Мерчендайзер').exists():
+            role_name = 'Мерчендайзер'
+            role_key = 'merchandiser'
+        elif user.groups.filter(name='Продавец').exists():
+            role_name = 'Продавец'
+            role_key = 'seller'
+
+        users_data.append({
+            'id': user.id,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'is_active': user.is_active,
+            'role_name': role_name,
+            'role_key': role_key,
+            'is_current_user': user == request.user,
+        })
+
+    return render(request, 'inventory/user_list.html', {'users': users_data})
 
 
 @login_required

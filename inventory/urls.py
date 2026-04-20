@@ -5,6 +5,8 @@ urlpatterns = [
     path('', views.role_redirect, name='role_redirect'),
     path('home/', views.home, name='home'),
 
+    path('users/', views.user_list, name='user_list'),
+
     path('products/', views.product_list, name='product_list'),
     path('products/export/', views.export_products_excel, name='export_products_excel'),
     path('products/create/', views.create_product, name='create_product'),

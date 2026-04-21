@@ -25,142 +25,18 @@
         <h3>Критически мало</h3>
         <p>{{ critical_stock_count }}</p>
     </div>
-
-    <div class="stat-box">
-        <h3>Без движения</h3>
-        <p>{{ no_movement_count }}</p>
-    </div>
-
-    <div class="stat-box">
-        <h3>Продано за 30 дней</h3>
-        <p>{{ total_sales_last_30 }}</p>
-    </div>
-
-    <div class="stat-box">
-        <h3>Сумма продаж за 30 дней</h3>
-        <p>{{ total_revenue_last_30 }}</p>
-    </div>
-
-    <div class="stat-box">
-        <h3>Лидер продаж</h3>
-        <p>
-            {% if top_product %}
-            {{ top_product.product__name }}
-            {% else %}
-            Нет данных
-            {% endif %}
-        </p>
-    </div>
 </div>
 
+<!-- 📊 ГРАФИК ОСТАТКОВ -->
 <div class="card">
-    <h2>Общая сводка</h2>
-    <p>
-        Главная панель показывает текущее состояние товарных запасов,
-        проблемные позиции, продажи за последний период и товары,
-        требующие пополнения.
-    </p>
+    <h2>Остатки товаров</h2>
+    <canvas id="stockChart"></canvas>
 </div>
 
+<!-- 📈 ГРАФИК ПРОДАЖ -->
 <div class="card">
-    <h2>Товары, требующие пополнения</h2>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Товар</th>
-                    <th>Категория</th>
-                    <th>Остаток</th>
-                    <th>Мин. остаток</th>
-                    <th>Средние продажи в день</th>
-                    <th>Рекомендуемый заказ</th>
-                    <th>Приоритет</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in top_replenishment_products %}
-                <tr>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.category }}</td>
-                    <td>{{ product.quantity }}</td>
-                    <td>{{ product.minimum_quantity }}</td>
-                    <td>{{ product.avg_daily_sales }}</td>
-                    <td>{{ product.recommended_order }}</td>
-                    <td>
-                        {% if product.replenishment_priority == 'Высокий' %}
-                        <span class="status-critical">Высокий</span>
-                        {% elif product.replenishment_priority == 'Средний' %}
-                        <span class="status-min">Средний</span>
-                        {% else %}
-                        <span class="status-ok">Низкий</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7">Нет товаров, требующих пополнения.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="card">
-    <h2>Топ товаров по продажам за 30 дней</h2>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Товар</th>
-                    <th>Количество продаж</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in top_products_last_30 %}
-                <tr>
-                    <td>{{ item.product__name }}</td>
-                    <td>{{ item.total_sold }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="2">Нет данных по продажам.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="card">
-    <h2>Товары без движения</h2>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Товар</th>
-                    <th>Категория</th>
-                    <th>Остаток</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in no_movement_products %}
-                <tr>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.category }}</td>
-                    <td>{{ product.quantity }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3">Нет товаров без движения.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <h2>Продажи за 7 дней</h2>
+    <canvas id="salesChart"></canvas>
 </div>
 
 <div class="card">
@@ -173,7 +49,6 @@
                     <th>Дата</th>
                     <th>Товар</th>
                     <th>Количество</th>
-                    <th>Комментарий</th>
                 </tr>
             </thead>
             <tbody>
@@ -182,17 +57,10 @@
                     <td>{{ sale.sale_date|date:"d.m.Y H:i" }}</td>
                     <td>{{ sale.product.name }}</td>
                     <td>{{ sale.quantity }}</td>
-                    <td>
-                        {% if sale.comment %}
-                        {{ sale.comment }}
-                        {% else %}
-                        -
-                        {% endif %}
-                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4">Продаж пока нет.</td>
+                    <td colspan="3">Нет продаж</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -210,7 +78,6 @@
                     <th>Дата</th>
                     <th>Товар</th>
                     <th>Количество</th>
-                    <th>Поставщик</th>
                 </tr>
             </thead>
             <tbody>
@@ -219,22 +86,46 @@
                     <td>{{ receipt.receipt_date|date:"d.m.Y H:i" }}</td>
                     <td>{{ receipt.product.name }}</td>
                     <td>{{ receipt.quantity }}</td>
-                    <td>
-                        {% if receipt.supplier %}
-                        {{ receipt.supplier }}
-                        {% else %}
-                        -
-                        {% endif %}
-                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4">Поступлений пока нет.</td>
+                    <td colspan="3">Нет поступлений</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+<!-- 📊 Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const stockCtx = document.getElementById('stockChart');
+
+    new Chart(stockCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Остаток',
+                data: {{ chart_data|safe }},
+            }]
+        }
+    });
+
+    const salesCtx = document.getElementById('salesChart');
+
+    new Chart(salesCtx, {
+        type: 'line',
+        data: {
+            labels: {{ sales_trend_labels|safe }},
+            datasets: [{
+                label: 'Продажи',
+                data: {{ sales_trend_data|safe }},
+            }]
+        }
+    });
+</script>
 
 {% endblock %}

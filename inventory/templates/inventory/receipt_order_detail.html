@@ -6,19 +6,28 @@
 {% block content %}
 
 <div class="card">
-    <h2>Накладная №{{ receipt_order.id }}</h2>
-    <p>Дата и время оформления: {{ receipt_order.created_at|date:"d.m.Y H:i" }}</p>
-    <p>Поставщик: <strong>{{ receipt_order.supplier_name }}</strong></p>
+    <h2>Поступление оформлено</h2>
+    <p>Накладная №{{ receipt_order.id }} успешно создана.</p>
 </div>
 
 <div class="stats">
     <div class="stat-box">
-        <h3>Позиций в накладной</h3>
-        <p>{{ positions_count }}</p>
+        <h3>Номер накладной</h3>
+        <p>{{ receipt_order.id }}</p>
     </div>
 
     <div class="stat-box">
-        <h3>Всего единиц</h3>
+        <h3>Дата и время</h3>
+        <p>{{ receipt_order.created_at|date:"d.m.Y H:i" }}</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Поставщик</h3>
+        <p>{{ receipt_order.supplier_name }}</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Общее количество</h3>
         <p>{{ total_quantity }}</p>
     </div>
 </div>
@@ -26,35 +35,33 @@
 <div class="card">
     <h2>Состав накладной</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Количество</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
-            <tr>
-                <td>{{ item.product.name }}</td>
-                <td>{{ item.quantity }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <th>Итого единиц</th>
-                <th>{{ total_quantity }}</th>
-            </tr>
-        </tfoot>
-    </table>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">Позиции отсутствуют.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<div class="card">
-    <div class="actions-row">
-        <a href="{% url 'create_receipt_order' %}" class="btn">Новое поступление</a>
-        <a href="{% url 'home' %}" class="btn btn-secondary">На главную</a>
-    </div>
+<div class="actions-row">
+    <a href="/receipts/new/" class="btn btn-secondary">Новое поступление</a>
+    <a href="/home/" class="btn">На главную</a>
 </div>
 
 {% endblock %}

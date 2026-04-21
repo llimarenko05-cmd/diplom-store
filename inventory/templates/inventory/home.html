@@ -39,6 +39,56 @@
 </div>
 
 <div class="card">
+    <h2>Требуют пополнения</h2>
+    <p style="margin-bottom: 18px;">Список товаров, для которых требуется контроль остатков и пополнение.</p>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Категория</th>
+                    <th>Остаток</th>
+                    <th>Мин. остаток</th>
+                    <th>Средние продажи в день</th>
+                    <th>Рекомендуемый заказ</th>
+                    <th>Приоритет</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in top_replenishment_products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.minimum_quantity }}</td>
+                    <td>{{ product.avg_daily_sales }}</td>
+                    <td>{{ product.recommended_order }}</td>
+                    <td>
+                        {% if product.replenishment_priority == 'Высокий' %}
+                        <span class="status-critical">Высокий</span>
+                        {% elif product.replenishment_priority == 'Средний' %}
+                        <span class="status-min">Средний</span>
+                        {% else %}
+                        <span class="status-ok">Низкий</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">Нет товаров, требующих пополнения.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions-row" style="margin-top: 18px;">
+        <a href="/replenishment/" class="btn">Перейти к пополнению</a>
+    </div>
+</div>
+
+<div class="card">
     <h2>Остатки товаров</h2>
     <canvas id="stockChart"></canvas>
 </div>

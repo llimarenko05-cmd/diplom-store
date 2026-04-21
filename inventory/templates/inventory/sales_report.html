@@ -7,66 +7,111 @@
 
 <div class="card">
     <h2>Фильтр отчёта</h2>
-    <p>
-        Отчёт позволяет анализировать продажи товаров за выбранный период времени.
-    </p>
 
-    <form method="get" class="form-row">
-        <input type="date" name="start_date" value="{{ start_date }}">
-        <input type="date" name="end_date" value="{{ end_date }}">
-        <button type="submit" class="btn">Применить фильтр</button>
-        <a href="{% url 'export_sales_report_excel' %}?start_date={{ start_date }}&end_date={{ end_date }}" class="btn btn-secondary">Экспорт в Excel</a>
+    <form method="get" class="actions-row" style="margin-top: 16px;">
+        <div style="min-width: 220px;">
+            <label for="start_date" style="display:block; margin-bottom:8px; font-weight:700;">Дата начала</label>
+            <input type="date" id="start_date" name="start_date" value="{{ start_date }}">
+        </div>
+
+        <div style="min-width: 220px;">
+            <label for="end_date" style="display:block; margin-bottom:8px; font-weight:700;">Дата окончания</label>
+            <input type="date" id="end_date" name="end_date" value="{{ end_date }}">
+        </div>
+
+        <div style="display:flex; align-items:flex-end; gap:12px;">
+            <button type="submit" class="btn btn-secondary">Показать</button>
+            <a href="{% url 'export_sales_report_excel' %}?start_date={{ start_date }}&end_date={{ end_date }}" class="btn">
+                Экспорт в Excel
+            </a>
+        </div>
     </form>
+</div>
+
+<div class="stats">
+    <div class="stat-box">
+        <h3>Позиций в отчёте</h3>
+        <p>{{ report|length }}</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Период с</h3>
+        <p>
+            {% if start_date %}
+            {{ start_date }}
+            {% else %}
+            —
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Период по</h3>
+        <p>
+            {% if end_date %}
+            {{ end_date }}
+            {% else %}
+            —
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Лидер продаж</h3>
+        <p>
+            {% if report %}
+            {{ report.0.product__name }}
+            {% else %}
+            Нет данных
+            {% endif %}
+        </p>
+    </div>
 </div>
 
 <div class="card">
     <h2>График продаж</h2>
-    <canvas id="salesChart"></canvas>
+    <canvas id="salesReportChart"></canvas>
 </div>
 
 <div class="card">
-    <h2>Таблица продаж</h2>
+    <h2>Таблица отчёта</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Количество проданных единиц</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in report %}
-            <tr>
-                <td><strong>{{ item.product__name }}</strong></td>
-                <td>{{ item.total_sold }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="2">Нет данных за выбранный период.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Количество проданных единиц</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in report %}
+                <tr>
+                    <td>{{ item.product__name }}</td>
+                    <td>{{ item.total_sold }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">Нет данных по продажам за выбранный период.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-{{ sales_chart_labels|json_script:"sales-chart-labels" }}
-{{ sales_chart_data|json_script:"sales-chart-data" }}
 
 <script>
-    const salesLabels = JSON.parse(document.getElementById('sales-chart-labels').textContent);
-    const salesData = JSON.parse(document.getElementById('sales-chart-data').textContent);
+    const salesReportCtx = document.getElementById('salesReportChart');
 
-    const salesCtx = document.getElementById('salesChart').getContext('2d');
-
-    new Chart(salesCtx, {
+    new Chart(salesReportCtx, {
         type: 'bar',
         data: {
-            labels: salesLabels,
+            labels: {{ sales_chart_labels|safe }},
             datasets: [{
-                label: 'Количество проданных единиц',
-                data: salesData,
-                borderWidth: 1
+                label: 'Продано',
+                data: {{ sales_chart_data|safe }},
             }]
         },
         options: {
@@ -74,11 +119,6 @@
             plugins: {
                 legend: {
                     display: true
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
                 }
             }
         }

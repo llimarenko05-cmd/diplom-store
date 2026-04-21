@@ -30,6 +30,7 @@
         </select>
 
         <button type="submit" class="btn btn-secondary">Найти</button>
+
         <a href="{% url 'export_products_excel' %}?q={{ query }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="btn">
             Экспорт в Excel
         </a>
@@ -43,6 +44,7 @@
                     <th>Артикул</th>
                     <th>Цена</th>
                     <th>Остаток</th>
+                    <th>Статус</th>
                     <th>Действия</th>
                 </tr>
             </thead>
@@ -55,9 +57,21 @@
                         <div class="muted-text">{{ product.category }}</div>
                         {% endif %}
                     </td>
+
                     <td>{{ product.article }}</td>
                     <td>{{ product.price }}</td>
                     <td>{{ product.quantity }}</td>
+
+                    <td>
+                        {% if product.quantity > product.minimum_quantity %}
+                        <span class="status-ok">В наличии</span>
+                        {% elif product.quantity == product.minimum_quantity %}
+                        <span class="status-min">Заканчивается</span>
+                        {% else %}
+                        <span class="status-critical">Критически мало</span>
+                        {% endif %}
+                    </td>
+
                     <td>
                         <div class="actions-row">
                             <a href="{% url 'product_detail' product.id %}" class="btn">Открыть</a>
@@ -67,7 +81,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5">Товары не найдены.</td>
+                    <td colspan="6">Товары не найдены.</td>
                 </tr>
                 {% endfor %}
             </tbody>

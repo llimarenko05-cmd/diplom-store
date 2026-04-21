@@ -25,15 +25,24 @@
         <h3>Критически мало</h3>
         <p>{{ critical_stock_count }}</p>
     </div>
+
+    <div class="stat-box">
+        <h3>Самый продаваемый товар</h3>
+        <p>
+            {% if top_product %}
+            {{ top_product.product__name }}
+            {% else %}
+            Нет данных
+            {% endif %}
+        </p>
+    </div>
 </div>
 
-<!-- 📊 ГРАФИК ОСТАТКОВ -->
 <div class="card">
     <h2>Остатки товаров</h2>
     <canvas id="stockChart"></canvas>
 </div>
 
-<!-- 📈 ГРАФИК ПРОДАЖ -->
 <div class="card">
     <h2>Продажи за 7 дней</h2>
     <canvas id="salesChart"></canvas>
@@ -97,7 +106,6 @@
     </div>
 </div>
 
-<!-- 📊 Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>

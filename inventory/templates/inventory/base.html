@@ -18,33 +18,33 @@
 
             <nav class="sidebar-menu">
                 {% if is_admin_role %}
-                <a href="/" class="menu-link">🏠 Главная</a>
-                <a href="/users/" class="menu-link">👤 Пользователи</a>
-                <a href="/products/" class="menu-link">📦 Товары</a>
-                <a href="/stock/" class="menu-link">📊 Остатки</a>
-                <a href="/low-stock/" class="menu-link">⚠ Низкий остаток</a>
-                <a href="/replenishment/" class="menu-link">🔄 Пополнение</a>
-                <a href="/no-movement/" class="menu-link">⛔ Без движения</a>
-                <a href="/action-log/" class="menu-link">📜 Журнал действий</a>
-                <a href="/sales/new/" class="menu-link">💰 Продажа</a>
-                <a href="/receipts/new/" class="menu-link">📥 Поступление</a>
-                <a href="/sales/report/" class="menu-link">📈 Отчёт</a>
+                <a href="/" class="menu-link">Главная</a>
+                <a href="/users/" class="menu-link">Пользователи</a>
+                <a href="/products/" class="menu-link">Товары</a>
+                <a href="/stock/" class="menu-link">Остатки</a>
+                <a href="/low-stock/" class="menu-link">Низкий остаток</a>
+                <a href="/replenishment/" class="menu-link">Пополнение</a>
+                <a href="/no-movement/" class="menu-link">Без движения</a>
+                <a href="/action-log/" class="menu-link">Журнал действий</a>
+                <a href="/sales/new/" class="menu-link">Продажа</a>
+                <a href="/receipts/new/" class="menu-link">Поступление</a>
+                <a href="/sales/report/" class="menu-link">Отчёт</a>
                 {% endif %}
 
                 {% if is_merchandiser_role and not is_admin_role %}
-                <a href="/" class="menu-link">🏠 Главная</a>
-                <a href="/stock/" class="menu-link">📊 Остатки</a>
-                <a href="/low-stock/" class="menu-link">⚠ Низкий остаток</a>
-                <a href="/replenishment/" class="menu-link">🔄 Пополнение</a>
-                <a href="/no-movement/" class="menu-link">⛔ Без движения</a>
-                <a href="/receipts/new/" class="menu-link">📥 Поступление</a>
-                <a href="/sales/report/" class="menu-link">📈 Отчёт</a>
+                <a href="/" class="menu-link">Главная</a>
+                <a href="/stock/" class="menu-link">Остатки</a>
+                <a href="/low-stock/" class="menu-link">Низкий остаток</a>
+                <a href="/replenishment/" class="menu-link">Пополнение</a>
+                <a href="/no-movement/" class="menu-link">Без движения</a>
+                <a href="/receipts/new/" class="menu-link">Поступление</a>
+                <a href="/sales/report/" class="menu-link">Отчёт</a>
                 {% endif %}
 
                 {% if is_seller_role and not is_admin_role %}
-                <a href="/products/" class="menu-link">📦 Товары</a>
-                <a href="/stock/" class="menu-link">📊 Остатки</a>
-                <a href="/sales/new/" class="menu-link">💰 Продажа</a>
+                <a href="/products/" class="menu-link">Товары</a>
+                <a href="/stock/" class="menu-link">Остатки</a>
+                <a href="/sales/new/" class="menu-link">Продажа</a>
                 {% endif %}
             </nav>
         </aside>

@@ -366,25 +366,23 @@ def product_list(request):
             'selected': str(category.id) == category_id
         })
 
-    gender_options = []
-    unique_genders = Product.objects.order_by('gender').values_list('gender', flat=True).distinct()
-    for gender in unique_genders:
-        if gender:
-            gender_options.append({
-                'value': gender,
-                'label': gender,
-                'selected': gender == gender_value,
-            })
+    gender_options = [
+        {
+            'value': value,
+            'label': label,
+            'selected': value == gender_value,
+        }
+        for value, label in Product.GENDER_CHOICES
+    ]
 
-    size_options = []
-    unique_sizes = Product.objects.order_by('size').values_list('size', flat=True).distinct()
-    for size in unique_sizes:
-        if size:
-            size_options.append({
-                'value': size,
-                'label': size,
-                'selected': size == size_value,
-            })
+    size_options = [
+        {
+            'value': value,
+            'label': label,
+            'selected': value == size_value,
+        }
+        for value, label in Product.SIZE_CHOICES
+    ]
 
     context = {
         'products': products,
@@ -395,6 +393,7 @@ def product_list(request):
         'selected_gender': gender_value,
         'selected_size': size_value,
     }
+
     return render(request, 'inventory/product_list.html', context)
 
 
@@ -959,11 +958,13 @@ def sale_order_detail(request, sale_order_id):
 
     items = sale_order.items.all()
     total_quantity = sum(item.quantity for item in items)
+    total_sum = sum(item.quantity * float(item.price) for item in items)
 
     context = {
         'sale_order': sale_order,
         'items': items,
         'total_quantity': total_quantity,
+        'total_sum': round(total_sum, 2),
     }
     return render(request, 'inventory/sale_order_detail.html', context)
 

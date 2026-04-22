@@ -53,9 +53,9 @@
                 <tr>
                     <td>
                         <strong>{{ product.name }}</strong>
-                        {% if product.category %}
-                        <div class="muted-text">{{ product.category }}</div>
-                        {% endif %}
+                        <div class="muted-text">
+                            {{ product.gender }} · {{ product.color }} · {{ product.size }}
+                        </div>
                     </td>
 
                     <td>{{ product.article }}</td>

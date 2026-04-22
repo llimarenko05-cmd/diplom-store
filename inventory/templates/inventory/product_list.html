@@ -29,9 +29,29 @@
             {% endfor %}
         </select>
 
+        <select name="gender">
+            <option value="">Любой пол</option>
+            {% for item in gender_options %}
+            <option value="{{ item.value }}" {% if item.selected %}selected{% endif %}>
+                {{ item.label }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <select name="size">
+            <option value="">Любой размер</option>
+            {% for item in size_options %}
+            <option value="{{ item.value }}" {% if item.selected %}selected{% endif %}>
+                {{ item.label }}
+            </option>
+            {% endfor %}
+        </select>
+
         <button type="submit" class="btn btn-secondary">Найти</button>
 
-        <a href="{% url 'export_products_excel' %}?q={{ query }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="btn">
+        <a href="{% url 'product_list' %}" class="btn btn-secondary">Сбросить</a>
+
+        <a href="{% url 'export_products_excel' %}?q={{ query }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}{% if request.GET.size %}&size={{ request.GET.size }}{% endif %}" class="btn">
             Экспорт в Excel
         </a>
     </form>

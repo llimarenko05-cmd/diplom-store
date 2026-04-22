@@ -328,12 +328,20 @@ def product_list(request):
 
     query = request.GET.get('q', '').strip()
     category_id = request.GET.get('category', '').strip()
+    gender_value = request.GET.get('gender', '').strip()
+    size_value = request.GET.get('size', '').strip()
 
     categories_queryset = Category.objects.all().order_by('name')
     products_queryset = Product.objects.select_related('category', 'supplier').all().order_by('name')
 
     if category_id:
         products_queryset = products_queryset.filter(category_id=category_id)
+
+    if gender_value:
+        products_queryset = products_queryset.filter(gender=gender_value)
+
+    if size_value:
+        products_queryset = products_queryset.filter(size=size_value)
 
     products = list(products_queryset)
 
@@ -358,10 +366,34 @@ def product_list(request):
             'selected': str(category.id) == category_id
         })
 
+    gender_options = []
+    unique_genders = Product.objects.order_by('gender').values_list('gender', flat=True).distinct()
+    for gender in unique_genders:
+        if gender:
+            gender_options.append({
+                'value': gender,
+                'label': gender,
+                'selected': gender == gender_value,
+            })
+
+    size_options = []
+    unique_sizes = Product.objects.order_by('size').values_list('size', flat=True).distinct()
+    for size in unique_sizes:
+        if size:
+            size_options.append({
+                'value': size,
+                'label': size,
+                'selected': size == size_value,
+            })
+
     context = {
         'products': products,
         'categories': categories,
+        'gender_options': gender_options,
+        'size_options': size_options,
         'query': query,
+        'selected_gender': gender_value,
+        'selected_size': size_value,
     }
     return render(request, 'inventory/product_list.html', context)
 
@@ -373,11 +405,19 @@ def export_products_excel(request):
 
     query = request.GET.get('q', '').strip()
     category_id = request.GET.get('category', '').strip()
+    gender_value = request.GET.get('gender', '').strip()
+    size_value = request.GET.get('size', '').strip()
 
     products_queryset = Product.objects.select_related('category', 'supplier').all().order_by('name')
 
     if category_id:
         products_queryset = products_queryset.filter(category_id=category_id)
+
+    if gender_value:
+        products_queryset = products_queryset.filter(gender=gender_value)
+
+    if size_value:
+        products_queryset = products_queryset.filter(size=size_value)
 
     products = list(products_queryset)
 
@@ -1125,12 +1165,12 @@ def sales_report(request):
     end_date = request.GET.get('end_date', '').strip()
 
     if start_date:
-        sales = sales.filter(sale_date__gte=start_date)
+        sales = sales.filter(sale_date__date__gte=start_date)
 
     if end_date:
-        sales = sales.filter(sale_date__lte=end_date)
+        sales = sales.filter(sale_date__date__lte=end_date)
 
-    report = (
+    report = list(
         sales.values('product__name')
         .annotate(total_sold=Coalesce(Sum('quantity'), 0))
         .order_by('-total_sold', 'product__name')
@@ -1160,10 +1200,10 @@ def export_sales_report_excel(request):
     end_date = request.GET.get('end_date', '').strip()
 
     if start_date:
-        sales = sales.filter(sale_date__gte=start_date)
+        sales = sales.filter(sale_date__date__gte=start_date)
 
     if end_date:
-        sales = sales.filter(sale_date__lte=end_date)
+        sales = sales.filter(sale_date__date__lte=end_date)
 
     report = (
         sales.values('product__name')

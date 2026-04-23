@@ -28,7 +28,7 @@
                             <select name="product" required>
                                 <option value="">Выберите товар</option>
                                 {% for product in products %}
-                                <option value="{{ product.id }}">{{ product.name }}</option>
+                                <option value="{{ product.id }}">{{ product }}</option>
                                 {% endfor %}
                             </select>
                         </td>

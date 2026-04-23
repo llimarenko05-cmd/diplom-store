@@ -956,9 +956,15 @@ def sale_order_detail(request, sale_order_id):
         id=sale_order_id
     )
 
-    items = sale_order.items.all()
-    total_quantity = sum(item.quantity for item in items)
-    total_sum = sum(item.quantity * float(item.price) for item in items)
+    items = list(sale_order.items.all())
+
+    total_quantity = 0
+    total_sum = 0
+
+    for item in items:
+        item.row_total = round(item.quantity * float(item.price), 2)
+        total_quantity += item.quantity
+        total_sum += item.row_total
 
     context = {
         'sale_order': sale_order,

@@ -65,7 +65,7 @@ class Product(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.gender}, {self.color}, {self.size})'
 
     @property
     def stock_status(self):
@@ -91,6 +91,14 @@ class StockReceipt(models.Model):
     def __str__(self):
         return f'{self.product.name} - {self.quantity}'
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+
+        if is_new:
+            self.product.quantity += self.quantity
+            self.product.save(update_fields=['quantity'])
+
 
 class Sale(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Товар')
@@ -106,6 +114,15 @@ class Sale(models.Model):
     def __str__(self):
         return f'{self.product.name} - {self.quantity}'
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+
+        if is_new:
+            if self.product.quantity >= self.quantity:
+                self.product.quantity -= self.quantity
+                self.product.save(update_fields=['quantity'])
+
 
 class SaleOrder(models.Model):
     created_at = models.DateTimeField(default=timezone.now, verbose_name='Дата создания')
@@ -118,9 +135,22 @@ class SaleOrder(models.Model):
     def __str__(self):
         return f'Чек №{self.id}'
 
+    @property
+    def total_items_count(self):
+        return sum(item.quantity for item in self.items.all())
+
+    @property
+    def total_amount(self):
+        return sum(item.quantity * item.price for item in self.items.all())
+
 
 class SaleItem(models.Model):
-    sale = models.ForeignKey(SaleOrder, on_delete=models.CASCADE, related_name='items', verbose_name='Чек')
+    sale = models.ForeignKey(
+        SaleOrder,
+        on_delete=models.CASCADE,
+        related_name='items',
+        verbose_name='Чек'
+    )
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.PositiveIntegerField(verbose_name='Количество')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
@@ -145,9 +175,18 @@ class ReceiptOrder(models.Model):
     def __str__(self):
         return f'Накладная №{self.id}'
 
+    @property
+    def total_items_count(self):
+        return sum(item.quantity for item in self.items.all())
+
 
 class ReceiptItem(models.Model):
-    receipt = models.ForeignKey(ReceiptOrder, on_delete=models.CASCADE, related_name='items', verbose_name='Накладная')
+    receipt = models.ForeignKey(
+        ReceiptOrder,
+        on_delete=models.CASCADE,
+        related_name='items',
+        verbose_name='Накладная'
+    )
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.PositiveIntegerField(verbose_name='Количество')
 
